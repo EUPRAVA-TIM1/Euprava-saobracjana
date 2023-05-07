@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"EuprvaSaobracajna/data"
 	"EuprvaSaobracajna/service"
 	"encoding/json"
 	"github.com/gorilla/mux"
@@ -27,6 +28,13 @@ func (s saobracjanaHandler) Init(r *mux.Router) {
 	r.HandleFunc("/saobracajna/Gradjanin/Nalozi/{jmbg}", s.IsAuthorized(s.GetGradjaninNaloge, false)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Authorise", s.IsAuthorized(s.Authorise, false)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Authorise", s.IsAuthorized(s.Authorise, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/KradjaVozila", s.IsAuthorized(s.PostKradjaVozila, false)).Methods("POST", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Nalozi", s.IsAuthorized(s.PostNalog, true)).Methods("POST", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacNalozi, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Nalozi/Sud/{jmbg}", s.IsAuthorized(s.GetPolicajacSudNalozi, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/Sud/{jmbg}", s.IsAuthorized(s.ProveraOsobeSud, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/Osoba/Mup/{jmbg}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/Vozilo/Mup/{tablica}", s.IsAuthorized(s.ProveraVozilaMup, true)).Methods("GET", "OPTIONS")
 
 	http.Handle("/", r)
 }
@@ -53,6 +61,65 @@ func (s saobracjanaHandler) GetGradjaninNaloge(w http.ResponseWriter, r *http.Re
 		return
 	}
 	jsonResponse(nalozi, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) PostKradjaVozila(w http.ResponseWriter, r *http.Request) {
+	var prijava data.PrijavaKradjeVozila
+	err := json.NewDecoder(r.Body).Decode(&prijava)
+	if err != nil {
+		http.Error(w, "Problem with decoding JSON", http.StatusBadRequest)
+		return
+	}
+
+	err = s.saobracjanaService.SendKradjaPrijava(prijava)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	jsonResponse("Kradja reported successfully", w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) PostNalog(w http.ResponseWriter, r *http.Request) {
+	var nalog data.PrekrsajniNalog
+	err := json.NewDecoder(r.Body).Decode(&nalog)
+
+	if err != nil {
+		http.Error(w, "Problem with decoding JSON", http.StatusBadRequest)
+		return
+	}
+	savedNalog, err := s.saobracjanaService.SaveNalog(nalog)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	jsonResponse(savedNalog, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) GetPolicajacNalozi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	nalozi, err := s.saobracjanaService.GetPolcajacPrekrsajneNaloge(jmbg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(nalozi, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) GetPolicajacSudNalozi(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s saobracjanaHandler) ProveraOsobeSud(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s saobracjanaHandler) ProveraOsobeMup(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s saobracjanaHandler) ProveraVozilaMup(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func jsonResponse(object interface{}, w http.ResponseWriter, status int) {

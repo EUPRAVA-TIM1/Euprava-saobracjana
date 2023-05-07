@@ -13,6 +13,10 @@ type Config struct {
 	SSOIssuer      string
 	SsoServiceHost string
 	SsoServicePort string
+	SudServiceHost string
+	SudServicePort string
+	MupServiceHost string
+	MupServicePort string
 }
 
 const (
@@ -30,6 +34,10 @@ const (
 	DefaultSSOIssuer     = "saobracajna614393"
 	SsoServicePortKey    = "SSO_SERVICE_PORT"
 	SsoServiceHostKey    = "SSO_SERVICE_HOST"
+	MupServiceHostKey    = "MUP_HOST"
+	MupServicePortKey    = "MUP_PORT"
+	SudServicePortKey    = "SUD_SERVICE_PORT"
+	SudServiceHostKey    = "SUD_SERVICE_HOST"
 )
 
 func NewConfig() (c Config) {
@@ -78,6 +86,28 @@ func NewConfig() (c Config) {
 		c.SsoServiceHost = host
 	} else {
 		panic("No ssoService host provided!")
+	}
+
+	if port, set := os.LookupEnv(MupServicePortKey); set && port != "" {
+		c.MupServicePort = port
+	} else {
+		panic("No mupService port provided!")
+	}
+	if host, set := os.LookupEnv(MupServiceHostKey); set && host != "" {
+		c.MupServiceHost = host
+	} else {
+		panic("No mupService host provided!")
+	}
+
+	if port, set := os.LookupEnv(SudServicePortKey); set && port != "" {
+		c.SudServicePort = port
+	} else {
+		panic("No sudService port provided!")
+	}
+	if host, set := os.LookupEnv(SudServiceHostKey); set && host != "" {
+		c.SudServiceHost = host
+	} else {
+		panic("No sudService host provided!")
 	}
 	return
 }

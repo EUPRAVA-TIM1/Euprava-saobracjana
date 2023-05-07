@@ -45,21 +45,21 @@ type Zaposleni struct {
 }
 
 type PrekrsajniNalog struct {
-	Id             int       `json:"id"`
+	Id             int64     `json:"id"`
 	Datum          time.Time `json:"datum"`
 	Opis           string    `json:"opis"`
-	IzdatoOdStrane string    `json:"izdatoOdStrane"`
-	JMBGSluzbenika string    `json:"JMBGSluzbenika"`
-	IzdatoZa       string    `json:"izdatoZa"`
-	JMBGZapisanog  string    `json:"JMBGZapisanog"`
-	TipPrekrsaja   string    `json:"tipPrekrsaja"`
+	IzdatoOdStrane string    `json:"izdatoOdStrane",required max=60`
+	JMBGSluzbenika string    `json:"JMBGSluzbenika", len=13`
+	IzdatoZa       string    `json:"izdatoZa",max = 60,required`
+	JMBGZapisanog  string    `json:"JMBGZapisanog", len=13`
+	TipPrekrsaja   string    `json:"tipPrekrsaja", required`
 	JedinicaMere   *string   `json:"jedinicaMere"`
-	Vrednost       *int      `json:"vrednost"`
+	Vrednost       *int      `json:"vrednost", min=0`
 	Slike          []string  `json:"slike"`
 }
 
 type PrekrsajniNalogDTO struct {
-	Id             int       `json:"id"`
+	Id             int64     `json:"id"`
 	Datum          time.Time `json:"datum"`
 	Opis           string    `json:"opis"`
 	IzdatoOdStrane string    `json:"izdatoOdStrane"`
@@ -85,9 +85,9 @@ type SudskiNalog struct {
 }
 
 type PrijavaKradjeVozila struct {
-	Prijvio          string    `json:"prijvio"`
-	KontaktTelefon   string    `json:"kontaktTelefon"`
-	BrojRegistracije string    `json:"brojRegistracije"`
+	Prijvio          string    `json:"prijvio", max=60`
+	KontaktTelefon   string    `json:"kontaktTelefon",len=13`
+	BrojRegistracije string    `json:"brojRegistracije"max=7,min=3`
 	Datum            time.Time `json:"datum"`
-	JMBGVlasnika     string    `json:"JMBGVlasnika"`
+	JMBGVlasnika     string    `json:"JMBGVlasnika", len=13`
 }
