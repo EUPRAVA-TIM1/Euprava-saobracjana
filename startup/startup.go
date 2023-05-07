@@ -28,9 +28,16 @@ func NewServer(config *config.Config) *Server {
 }
 
 func (server Server) setup() handlers.SaobracjanaHandler {
+	secretRepo := repo.NewSecretRepoSql(server.config.MysqlPort, server.config.MySqlRootPass, server.config.MySqlHost)
+	ssoService := service.NewSsoService(ConstructServiceUrl(server.config.SsoServiceHost, server.config.SsoServicePort), server.config.SSOIssuer)
 	saobracajnaRepo := repo.NewSaobracjanaRepoSql(server.config.MysqlPort, server.config.MySqlRootPass, server.config.MySqlHost)
 	saobracjanaService := service.NewSaobracjanaService(saobracajnaRepo)
-	return handlers.NewSaobracajnaHandler(saobracjanaService)
+	jwtService := service.NewJwtService(secretRepo, saobracajnaRepo, ssoService)
+	return handlers.NewSaobracajnaHandler(saobracjanaService, jwtService)
+}
+
+func ConstructServiceUrl(host, port string) string {
+	return fmt.Sprintf("http://%s:%s", host, port)
 }
 
 func (server Server) Start() {

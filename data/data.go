@@ -2,6 +2,28 @@ package data
 
 import "time"
 
+/*Secret is struct that contains the secret key used for signing JWT tokens and ExpiresAt that represents until when JWT would be used and valid
+ */
+type Secret struct {
+	Secret    string     `json:"secret"`
+	ExpiresAt CustomTime `json:"expiresAt"`
+}
+
+type CustomTime struct {
+	time.Time
+}
+
+func (t *CustomTime) UnmarshalJSON(b []byte) error {
+	// Custom parsing logic for your date format
+	// Example: "2006-01-02T15:04:05Z"
+	parsedTime, err := time.Parse(`"2006-01-02T15:04:05Z"`, string(b))
+	if err != nil {
+		return err
+	}
+	t.Time = parsedTime
+	return nil
+}
+
 type Opstina struct {
 	PTT   string `json:"PTT"`
 	Naziv string `json:"Naziv"`

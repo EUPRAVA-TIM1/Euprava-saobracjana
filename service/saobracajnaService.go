@@ -7,18 +7,18 @@ type SaobracajnaService interface {
 	GetStanice() ([]data.PolicijskaStanica, error)
 }
 
-type saobracjanaService struct {
+type saobracjanaServiceImpl struct {
 	saobracjanaRepo data.SaobracajnaRepo
 }
 
-func (s saobracjanaService) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
+func NewSaobracjanaService(repo data.SaobracajnaRepo) SaobracajnaService {
+	return saobracjanaServiceImpl{repo}
+}
+
+func (s saobracjanaServiceImpl) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
 	return s.saobracjanaRepo.GetGradjaninPrekrsajneNaloge(JMBG)
 }
 
-func (s saobracjanaService) GetStanice() ([]data.PolicijskaStanica, error) {
+func (s saobracjanaServiceImpl) GetStanice() ([]data.PolicijskaStanica, error) {
 	return s.saobracjanaRepo.GetStanice()
-}
-
-func NewSaobracjanaService(repo data.SaobracajnaRepo) SaobracajnaService {
-	return saobracjanaService{repo}
 }

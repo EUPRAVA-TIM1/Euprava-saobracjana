@@ -69,7 +69,15 @@ use eupravaMilicija;
         foreign key (NalogId) references SudskiNalog(Id),
         primary key (NalogId,UrlDokumenta)
     );
-    
+
+    create table if not exists Secrets(
+        Id int auto_increment,
+        ExpiresAt date,
+        SecretKey varchar(64),
+        primary key (Id)
+    );
+
+INSERT INTO Secrets (Id,ExpiresAt, SecretKey) VALUES (1,Now(),'secret');
 
 -- Unos podataka o opštinama
 INSERT INTO Opstina (PTT, Naziv) VALUES

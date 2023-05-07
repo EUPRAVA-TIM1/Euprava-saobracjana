@@ -101,6 +101,23 @@ func (s SaobracjanaRepoSql) GetStanice() ([]data.PolicijskaStanica, error) {
 	return stanice, nil
 }
 
+func (s SaobracjanaRepoSql) IsAWorker(jmbg string) (bool, error) {
+	db, err := s.OpenConnection()
+	if err != nil {
+		return false, errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+
+	query := "select count(*) from Zaposleni where JMBG = ? ;"
+	var count int
+	err = db.QueryRow(query, jmbg).Scan(&count)
+	if err != nil {
+		panic(err)
+		return false, errors.New("There has been problem with reading from db")
+	}
+	return count > 0, nil
+}
+
 func (s SaobracjanaRepoSql) OpenConnection() (*sql.DB, error) {
 	return sql.Open("mysql", fmt.Sprintf("root:%s@tcp(%s:%s)/%s", s.pass, s.host, s.port, schema))
 }

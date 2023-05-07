@@ -5,11 +5,14 @@ import (
 )
 
 type Config struct {
-	Port          string
-	Host          string
-	MysqlPort     string
-	MySqlHost     string
-	MySqlRootPass string
+	Port           string
+	Host           string
+	MysqlPort      string
+	MySqlHost      string
+	MySqlRootPass  string
+	SSOIssuer      string
+	SsoServiceHost string
+	SsoServicePort string
 }
 
 const (
@@ -23,6 +26,10 @@ const (
 	defaultMySqlHost     = "saobracajna_mysql"
 	mySqlRootPass        = "SAOBRACAJNA_MYSQL_ROOT_PASSWORD"
 	defaultMySqlRootPass = "root"
+	SSOIssuerKey         = "SAOBRACAJNA_ISSUER_KEY"
+	DefaultSSOIssuer     = "saobracajna614393"
+	SsoServicePortKey    = "SSO_SERVICE_PORT"
+	SsoServiceHostKey    = "SSO_SERVICE_HOST"
 )
 
 func NewConfig() (c Config) {
@@ -54,6 +61,23 @@ func NewConfig() (c Config) {
 		c.MySqlRootPass = pass
 	} else {
 		c.MySqlRootPass = defaultMySqlRootPass
+	}
+
+	if key, set := os.LookupEnv(SSOIssuerKey); set && key != "" {
+		c.SSOIssuer = key
+	} else {
+		c.SSOIssuer = DefaultSSOIssuer
+	}
+
+	if port, set := os.LookupEnv(SsoServicePortKey); set && port != "" {
+		c.SsoServicePort = port
+	} else {
+		panic("No ssoService port provided!")
+	}
+	if host, set := os.LookupEnv(SsoServiceHostKey); set && host != "" {
+		c.SsoServiceHost = host
+	} else {
+		panic("No ssoService host provided!")
 	}
 	return
 }
