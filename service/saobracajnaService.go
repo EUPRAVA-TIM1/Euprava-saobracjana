@@ -20,6 +20,10 @@ type saobracjanaServiceImpl struct {
 	MupService      MupService
 }
 
+func NewSaobracjanaService(repo data.SaobracajnaRepo, ms MupService, ss SudService) SaobracajnaService {
+	return saobracjanaServiceImpl{saobracjanaRepo: repo, sudService: ss, MupService: ms}
+}
+
 func (s saobracjanaServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error {
 	return s.MupService.SendKradjaPrijava(prijava)
 }
@@ -27,10 +31,6 @@ func (s saobracjanaServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozi
 func (s saobracjanaServiceImpl) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
 	return s.saobracjanaRepo.GetPolcajacPrekrsajneNaloge(JMBG)
 
-}
-
-func NewSaobracjanaService(repo data.SaobracajnaRepo, ms MupService, ss SudService) SaobracajnaService {
-	return saobracjanaServiceImpl{saobracjanaRepo: repo, sudService: ss, MupService: ms}
 }
 
 func (s saobracjanaServiceImpl) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {

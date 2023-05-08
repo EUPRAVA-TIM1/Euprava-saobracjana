@@ -47,7 +47,7 @@ type Zaposleni struct {
 type PrekrsajniNalog struct {
 	Id             int64     `json:"id"`
 	Datum          time.Time `json:"datum"`
-	Opis           string    `json:"opis"`
+	Opis           string    `json:"opis", required`
 	IzdatoOdStrane string    `json:"izdatoOdStrane",required max=60`
 	JMBGSluzbenika string    `json:"JMBGSluzbenika", len=13`
 	IzdatoZa       string    `json:"izdatoZa",max = 60,required`
@@ -86,7 +86,7 @@ type SudskiNalog struct {
 
 type PrijavaKradjeVozila struct {
 	Prijvio          string    `json:"prijvio", max=60`
-	KontaktTelefon   string    `json:"kontaktTelefon",len=13`
+	KontaktTelefon   string    `json:"kontaktTelefon",min=10,max=13`
 	BrojRegistracije string    `json:"brojRegistracije"max=7,min=3`
 	Datum            time.Time `json:"datum"`
 	JMBGVlasnika     string    `json:"JMBGVlasnika", len=13`

@@ -82,7 +82,6 @@ func (s saobracjanaHandler) PostKradjaVozila(w http.ResponseWriter, r *http.Requ
 func (s saobracjanaHandler) PostNalog(w http.ResponseWriter, r *http.Request) {
 	var nalog data.PrekrsajniNalog
 	err := json.NewDecoder(r.Body).Decode(&nalog)
-
 	if err != nil {
 		http.Error(w, "Problem with decoding JSON", http.StatusBadRequest)
 		return
