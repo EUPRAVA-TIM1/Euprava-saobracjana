@@ -75,6 +75,50 @@ func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.Pre
 	return nalozi, nil
 }
 
+func (s SaobracjanaRepoSql) GetPrekrajniNalog(nalogId string) (*data.PrekrsajniNalog, error) {
+	db, err := s.OpenConnection()
+	if err != nil {
+		return nil, errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,JMBGSluzbenika,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where id = ?;"
+	rows, err := db.Query(query, nalogId)
+	if err != nil {
+		panic(err)
+		return nil, errors.New("There has been problem with reading nalog from db")
+	}
+	var nalog data.PrekrsajniNalog
+	for rows.Next() {
+		var dateStr string
+		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.JMBGSluzbenika, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
+		if err != nil {
+			panic(err.Error())
+		}
+		datum, err := time.Parse("2006-01-02", dateStr)
+		if err != nil {
+			panic(err.Error())
+		}
+		nalog.Datum = datum
+		var imgs = make([]string, 0)
+		imgQuery := "select UrlSlike from SlikeNaloga where NalogId = ?;"
+		imgRows, err := db.Query(imgQuery, nalog.Id)
+		if err != nil {
+			panic(err)
+			return nil, errors.New("There has been problem with reading imgs from db")
+		}
+		for imgRows.Next() {
+			var url string
+			err := imgRows.Scan(&url)
+			if err != nil {
+				panic(err.Error())
+			}
+			imgs = append(imgs, url)
+		}
+		nalog.Slike = imgs
+	}
+	return &nalog, nil
+}
+
 func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
 	db, err := s.OpenConnection()
 	if err != nil {

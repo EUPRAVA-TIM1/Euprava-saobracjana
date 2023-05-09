@@ -5,18 +5,20 @@ import (
 )
 
 type Config struct {
-	Port           string
-	Host           string
-	MysqlPort      string
-	MySqlHost      string
-	MySqlRootPass  string
-	SSOIssuer      string
-	SsoServiceHost string
-	SsoServicePort string
-	SudServiceHost string
-	SudServicePort string
-	MupServiceHost string
-	MupServicePort string
+	Port            string
+	Host            string
+	MysqlPort       string
+	MySqlHost       string
+	MySqlRootPass   string
+	SSOIssuer       string
+	SsoServiceHost  string
+	SsoServicePort  string
+	SudServiceHost  string
+	SudServicePort  string
+	MupServiceHost  string
+	MupServicePort  string
+	FileServicePort string
+	FileServiceHost string
 }
 
 const (
@@ -38,6 +40,8 @@ const (
 	MupServicePortKey    = "MUP_PORT"
 	SudServicePortKey    = "SUD_SERVICE_PORT"
 	SudServiceHostKey    = "SUD_SERVICE_HOST"
+	FileServicePortKey   = "FILE_SERVICE_PORT"
+	FileServiceHostKey   = "FILE_SERVICE_HOST"
 )
 
 func NewConfig() (c Config) {
@@ -108,6 +112,16 @@ func NewConfig() (c Config) {
 		c.SudServiceHost = host
 	} else {
 		panic("No sudService host provided!")
+	}
+	if host, set := os.LookupEnv(FileServiceHostKey); set && host != "" {
+		c.FileServiceHost = host
+	} else {
+		panic("No fileService host provided!")
+	}
+	if port, set := os.LookupEnv(FileServicePortKey); set && port != "" {
+		c.FileServicePort = port
+	} else {
+		panic("No fileService port provided!")
 	}
 	return
 }

@@ -9,6 +9,10 @@ type Secret struct {
 	ExpiresAt CustomTime `json:"expiresAt"`
 }
 
+type FileDto struct {
+	Name string `json:"name"`
+}
+
 type CustomTime struct {
 	time.Time
 }

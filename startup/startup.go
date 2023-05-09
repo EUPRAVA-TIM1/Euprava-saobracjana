@@ -32,8 +32,9 @@ func (server Server) setup() handlers.SaobracjanaHandler {
 	ssoService := service.NewSsoService(ConstructServiceUrl(server.config.SsoServiceHost, server.config.SsoServicePort), server.config.SSOIssuer)
 	mupService := service.NewMupService(ConstructServiceUrl(server.config.MupServiceHost, server.config.MupServicePort))
 	sudService := service.NewSudService(ConstructServiceUrl(server.config.SudServiceHost, server.config.SudServicePort))
+	filesService := service.NewFilesService(ConstructServiceUrl(server.config.FileServiceHost, server.config.FileServicePort))
 	saobracajnaRepo := repo.NewSaobracjanaRepoSql(server.config.MysqlPort, server.config.MySqlRootPass, server.config.MySqlHost)
-	saobracjanaService := service.NewSaobracjanaService(saobracajnaRepo, mupService, sudService)
+	saobracjanaService := service.NewSaobracjanaService(saobracajnaRepo, mupService, sudService, filesService)
 	jwtService := service.NewJwtService(secretRepo, saobracajnaRepo, ssoService)
 	return handlers.NewSaobracajnaHandler(saobracjanaService, jwtService)
 }

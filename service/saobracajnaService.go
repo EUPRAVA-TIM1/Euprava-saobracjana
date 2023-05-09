@@ -12,16 +12,18 @@ type SaobracajnaService interface {
 	GetStanice() ([]data.PolicijskaStanica, error)
 	SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error
 	SaveNalog(nalog data.PrekrsajniNalog) (*data.PrekrsajniNalogDTO, error)
+	GetPdfNalog(nalogId string) (*data.FileDto, error)
 }
 
 type saobracjanaServiceImpl struct {
 	saobracjanaRepo data.SaobracajnaRepo
 	sudService      SudService
 	MupService      MupService
+	FileService     FilesService
 }
 
-func NewSaobracjanaService(repo data.SaobracajnaRepo, ms MupService, ss SudService) SaobracajnaService {
-	return saobracjanaServiceImpl{saobracjanaRepo: repo, sudService: ss, MupService: ms}
+func NewSaobracjanaService(repo data.SaobracajnaRepo, ms MupService, ss SudService, fs FilesService) SaobracajnaService {
+	return saobracjanaServiceImpl{saobracjanaRepo: repo, sudService: ss, MupService: ms, FileService: fs}
 }
 
 func (s saobracjanaServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error {
@@ -58,4 +60,22 @@ func (s saobracjanaServiceImpl) SaveNalog(noviNalog data.PrekrsajniNalog) (*data
 
 func (s saobracjanaServiceImpl) GetStanice() ([]data.PolicijskaStanica, error) {
 	return s.saobracjanaRepo.GetStanice()
+}
+
+func (s saobracjanaServiceImpl) GetPdfNalog(nalogId string) (*data.FileDto, error) {
+	nalog, err := s.saobracjanaRepo.GetPrekrajniNalog(nalogId)
+	if err != nil || nalog == nil {
+		return nil, errors.New("Cant find nalog with specified id")
+	}
+	pdf, err := GeneratePdf(*nalog)
+	if err != nil {
+		panic(err)
+		return nil, errors.New("There has been problem with generating pdf")
+	}
+	fileDto, err := s.FileService.SavePdf(pdf)
+	if err != nil {
+		panic(err)
+		return nil, errors.New("There has been problem with saving pdf")
+	}
+	return &fileDto, nil
 }

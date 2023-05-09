@@ -35,6 +35,7 @@ func (s saobracjanaHandler) Init(r *mux.Router) {
 	r.HandleFunc("/saobracajna/Policajac/Provera/Sud/{jmbg}", s.IsAuthorized(s.ProveraOsobeSud, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/Osoba/Mup/{jmbg}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/Vozilo/Mup/{tablica}", s.IsAuthorized(s.ProveraVozilaMup, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Nalog/{id}", s.IsAuthorized(s.GetPdfNalog, true)).Methods("GET", "OPTIONS")
 
 	http.Handle("/", r)
 }
@@ -103,6 +104,17 @@ func (s saobracjanaHandler) GetPolicajacNalozi(w http.ResponseWriter, r *http.Re
 		return
 	}
 	jsonResponse(nalozi, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) GetPdfNalog(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fileDto, err := s.saobracjanaService.GetPdfNalog(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonResponse(fileDto, w, http.StatusOK)
 }
 
 func (s saobracjanaHandler) GetPolicajacSudNalozi(w http.ResponseWriter, r *http.Request) {

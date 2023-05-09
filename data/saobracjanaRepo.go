@@ -6,4 +6,5 @@ type SaobracajnaRepo interface {
 	GetStanice() ([]PolicijskaStanica, error)
 	IsAWorker(jmbg string) (bool, error)
 	SaveNalog(nalog PrekrsajniNalog) (*PrekrsajniNalog, error)
+	GetPrekrajniNalog(nalogId string) (*PrekrsajniNalog, error)
 }
