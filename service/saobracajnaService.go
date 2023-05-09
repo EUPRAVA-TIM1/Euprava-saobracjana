@@ -69,12 +69,10 @@ func (s saobracjanaServiceImpl) GetPdfNalog(nalogId string) (*data.FileDto, erro
 	}
 	pdf, err := GeneratePdf(*nalog)
 	if err != nil {
-		panic(err)
 		return nil, errors.New("There has been problem with generating pdf")
 	}
 	fileDto, err := s.FileService.SavePdf(pdf)
 	if err != nil {
-		panic(err)
 		return nil, errors.New("There has been problem with saving pdf")
 	}
 	return &fileDto, nil
