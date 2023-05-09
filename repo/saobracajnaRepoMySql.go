@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"time"
 )
 
@@ -32,13 +33,14 @@ func NewSaobracjanaRepoSql(port, pass, host string) data.SaobracajnaRepo {
 func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
 	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where JMBGSluzbenika = ?;"
 	rows, err := db.Query(query, JMBG)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with reading nalog from db")
 	}
 	nalozi := make([]data.PrekrsajniNalogDTO, 0)
@@ -47,10 +49,11 @@ func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.Pre
 		var dateStr string
 		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
 		if err != nil {
-			panic(err.Error())
+			log.Fatal(err)
 		}
 		datum, err := time.Parse("2006-01-02", dateStr)
 		if err != nil {
+			log.Fatal(err)
 			panic(err.Error())
 		}
 		nalog.Datum = datum
@@ -58,14 +61,14 @@ func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.Pre
 		imgQuery := "select UrlSlike from SlikeNaloga where NalogId = ?;"
 		imgRows, err := db.Query(imgQuery, nalog.Id)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 			return nil, errors.New("There has been problem with reading imgs from db")
 		}
 		for imgRows.Next() {
 			var url string
 			err := imgRows.Scan(&url)
 			if err != nil {
-				panic(err.Error())
+				log.Fatal(err)
 			}
 			imgs = append(imgs, url)
 		}
@@ -78,13 +81,14 @@ func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.Pre
 func (s SaobracjanaRepoSql) GetPrekrajniNalog(nalogId string) (*data.PrekrsajniNalog, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
 	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,JMBGSluzbenika,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where id = ?;"
 	rows, err := db.Query(query, nalogId)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with reading nalog from db")
 	}
 	var nalog data.PrekrsajniNalog
@@ -92,25 +96,25 @@ func (s SaobracjanaRepoSql) GetPrekrajniNalog(nalogId string) (*data.PrekrsajniN
 		var dateStr string
 		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.JMBGSluzbenika, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
 		if err != nil {
-			panic(err.Error())
+			log.Fatal(err)
 		}
 		datum, err := time.Parse("2006-01-02", dateStr)
 		if err != nil {
-			panic(err.Error())
+			log.Fatal(err)
 		}
 		nalog.Datum = datum
 		var imgs = make([]string, 0)
 		imgQuery := "select UrlSlike from SlikeNaloga where NalogId = ?;"
 		imgRows, err := db.Query(imgQuery, nalog.Id)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 			return nil, errors.New("There has been problem with reading imgs from db")
 		}
 		for imgRows.Next() {
 			var url string
 			err := imgRows.Scan(&url)
 			if err != nil {
-				panic(err.Error())
+				log.Fatal(err)
 			}
 			imgs = append(imgs, url)
 		}
@@ -122,13 +126,14 @@ func (s SaobracjanaRepoSql) GetPrekrajniNalog(nalogId string) (*data.PrekrsajniN
 func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
 	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where JMBGZapisanog = ?;"
 	rows, err := db.Query(query, JMBG)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with reading nalog from db")
 	}
 	nalozi := make([]data.PrekrsajniNalogDTO, 0)
@@ -137,10 +142,12 @@ func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.Pr
 		var dateStr string
 		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
 		if err != nil {
+			log.Fatal(err)
 			panic(err.Error())
 		}
 		datum, err := time.Parse("2006-01-02", dateStr)
 		if err != nil {
+			log.Fatal(err)
 			panic(err.Error())
 		}
 		nalog.Datum = datum
@@ -148,14 +155,14 @@ func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.Pr
 		imgQuery := "select UrlSlike from SlikeNaloga where NalogId = ?;"
 		imgRows, err := db.Query(imgQuery, nalog.Id)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 			return nil, errors.New("There has been problem with reading imgs from db")
 		}
 		for imgRows.Next() {
 			var url string
 			err := imgRows.Scan(&url)
 			if err != nil {
-				panic(err.Error())
+				log.Fatal(err)
 			}
 			imgs = append(imgs, url)
 		}
@@ -168,6 +175,7 @@ func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.Pr
 func (s SaobracjanaRepoSql) GetStanice() ([]data.PolicijskaStanica, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
@@ -175,7 +183,7 @@ func (s SaobracjanaRepoSql) GetStanice() ([]data.PolicijskaStanica, error) {
 	query := "select Id,Adresa,BrojTelefona,Email,VremeOtvaranja,VremeZatvaranja,Naziv,PTT from PolicijskaStanica p, Opstina o where o.PTT = p.OpstinaID ;"
 	rows, err := db.Query(query)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with reading from db")
 	}
 
@@ -184,7 +192,7 @@ func (s SaobracjanaRepoSql) GetStanice() ([]data.PolicijskaStanica, error) {
 		var stanica data.PolicijskaStanica
 		err := rows.Scan(&stanica.Id, &stanica.Adresa, &stanica.BrojTelefona, &stanica.Email, &stanica.VremeOtvaranja, &stanica.VremeZatvaranja, &stanica.Opstina.Naziv, &stanica.Opstina.PTT)
 		if err != nil {
-			panic(err.Error())
+			log.Fatal(err)
 		}
 		stanice = append(stanice, stanica)
 	}
@@ -194,6 +202,7 @@ func (s SaobracjanaRepoSql) GetStanice() ([]data.PolicijskaStanica, error) {
 func (s SaobracjanaRepoSql) IsAWorker(jmbg string) (bool, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return false, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
@@ -202,7 +211,7 @@ func (s SaobracjanaRepoSql) IsAWorker(jmbg string) (bool, error) {
 	var count int
 	err = db.QueryRow(query, jmbg).Scan(&count)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 		return false, errors.New("There has been problem with reading from db")
 	}
 	return count > 0, nil
@@ -211,6 +220,7 @@ func (s SaobracjanaRepoSql) IsAWorker(jmbg string) (bool, error) {
 func (s SaobracjanaRepoSql) SaveNalog(nalog data.PrekrsajniNalog) (*data.PrekrsajniNalog, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
@@ -218,6 +228,7 @@ func (s SaobracjanaRepoSql) SaveNalog(nalog data.PrekrsajniNalog) (*data.Prekrsa
 	query := "INSERT INTO PrekrsajniNalog ( Datum, Opis, IzdatoOdStrane, JMBGSluzbenika, IzdatoZa, JMBGZapisanog, TipPrekrsaja, JedinicaMere, Vrednost) VALUES (?,?,?,?,?,?,?,?,?)"
 	res, err := db.Exec(query, nalog.Datum, nalog.Opis, nalog.IzdatoOdStrane, nalog.JMBGSluzbenika, nalog.IzdatoZa, nalog.JMBGZapisanog, nalog.TipPrekrsaja, nalog.JedinicaMere, nalog.Vrednost)
 	if err != nil {
+		log.Fatal(err)
 		return nil, fmt.Errorf("failed to insert secret key: %v", err)
 	}
 	id, _ := res.LastInsertId()
@@ -226,6 +237,7 @@ func (s SaobracjanaRepoSql) SaveNalog(nalog data.PrekrsajniNalog) (*data.Prekrsa
 			query := "INSERT INTO SlikeNaloga(NalogId,UrlSlike) VALUES (?,?)"
 			_, err := db.Exec(query, id, nalog.Slike[i])
 			if err != nil {
+				log.Fatal(err)
 				query := "DELETE FROM PrekrsajniNalog where Id = ?"
 				db.Exec(query, id)
 				return nil, fmt.Errorf("failed to insert secret key: %v", err)

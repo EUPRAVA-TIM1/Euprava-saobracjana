@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/jung-kurt/gofpdf"
+	"log"
 	"strconv"
 )
 
@@ -44,6 +45,7 @@ func GeneratePdf(nalog data.PrekrsajniNalog) ([]byte, error) {
 	}
 	var buf bytes.Buffer
 	if err := pdf.Output(&buf); err != nil {
+		log.Fatal(err)
 		return nil, err
 	}
 

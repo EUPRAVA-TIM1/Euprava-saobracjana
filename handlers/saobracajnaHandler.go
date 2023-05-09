@@ -33,8 +33,8 @@ func (s saobracjanaHandler) Init(r *mux.Router) {
 	r.HandleFunc("/saobracajna/Policajac/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacNalozi, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Nalozi/Sud/{jmbg}", s.IsAuthorized(s.GetPolicajacSudNalozi, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/Sud/{jmbg}", s.IsAuthorized(s.ProveraOsobeSud, true)).Methods("GET", "OPTIONS")
-	r.HandleFunc("/saobracajna/Policajac/Provera/Osoba/Mup/{jmbg}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
-	r.HandleFunc("/saobracajna/Policajac/Provera/Vozilo/Mup/{tablica}", s.IsAuthorized(s.ProveraVozilaMup, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/VozackaDozvola/Mup/{brojVozacke}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/SaobracjanaDozvola/Mup/{tablica}", s.IsAuthorized(s.ProveraVozilaMup, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Nalog/{id}", s.IsAuthorized(s.GetPdfNalog, true)).Methods("GET", "OPTIONS")
 
 	http.Handle("/", r)
@@ -126,11 +126,25 @@ func (s saobracjanaHandler) ProveraOsobeSud(w http.ResponseWriter, r *http.Reque
 }
 
 func (s saobracjanaHandler) ProveraOsobeMup(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	brojVozacke := vars["brojVozacke"]
+	vozacka, err := s.saobracjanaService.GetVozacka(brojVozacke)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(vozacka, w, http.StatusOK)
 }
 
 func (s saobracjanaHandler) ProveraVozilaMup(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	tablica := vars["tablica"]
+	saobracjana, err := s.saobracjanaService.GetSaobracjana(tablica)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(saobracjana, w, http.StatusOK)
 }
 
 func jsonResponse(object interface{}, w http.ResponseWriter, status int) {

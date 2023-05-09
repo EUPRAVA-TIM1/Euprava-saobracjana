@@ -95,3 +95,27 @@ type PrijavaKradjeVozila struct {
 	Datum            time.Time `json:"datum"`
 	JMBGVlasnika     string    `json:"JMBGVlasnika", len=13`
 }
+
+type VozackaDozvola struct {
+	BrojVozackeDozvole   string    `json:"brojVozackeDozvole"`
+	KategorijeVozila     []string  `json:"kategorijeVozila"`
+	DatumIzdavavanja     time.Time `json:"datumIzdavavanja"`
+	DatumIsteka          time.Time `json:"datumIsteka"`
+	BrojKaznenihPoena    int       `json:"brojKaznenihPoena"`
+	StatusVozackeDozvole string    `json:"statusVozackeDozvole"`
+}
+
+type SaobracjanaDozvola struct {
+	Marka              string     `json:"marka"`
+	Model              string     `json:"model"`
+	GodinaProizvodnje  int        `json:"godinaProizvodnje"`
+	Boja               string     `json:"boja"`
+	RegBroj            string     `json:"regBroj"`
+	SnagaMotora        float64    `json:"snagaMotora"`
+	MaksimalnaBrzina   float64    `json:"maksimalnaBrzina"`
+	BrojSedista        int        `json:"brojSedista"`
+	Tezina             float64    `json:"tezina"`
+	TipVozila          string     `json:"tipVozila"`
+	StatusRegistracije string     `json:"statusRegistracije"`
+	PrijavljenaKradja  *time.Time `json:"prijavljenaKradja",omitempty`
+}

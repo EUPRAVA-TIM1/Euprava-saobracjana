@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -29,6 +30,7 @@ func NewSecretRepoSql(port, pass, host string) data.SecretRepo {
 func (s SecretRepoSql) GetSecret() (*data.Secret, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
@@ -36,6 +38,7 @@ func (s SecretRepoSql) GetSecret() (*data.Secret, error) {
 	query := "select SecretKey,ExpiresAt from Secrets where Id = 1 ;"
 	rows, err := db.Query(query)
 	if err != nil {
+		log.Fatal(err)
 		panic(err)
 		return nil, errors.New("There has been problem with reading from db")
 	}

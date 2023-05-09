@@ -3,6 +3,7 @@ package service
 import (
 	"EuprvaSaobracajna/data"
 	"errors"
+	"log"
 	"time"
 )
 
@@ -13,6 +14,8 @@ type SaobracajnaService interface {
 	SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error
 	SaveNalog(nalog data.PrekrsajniNalog) (*data.PrekrsajniNalogDTO, error)
 	GetPdfNalog(nalogId string) (*data.FileDto, error)
+	GetVozacka(jmbg string) (*data.VozackaDozvola, error)
+	GetSaobracjana(tablica string) (*data.SaobracjanaDozvola, error)
 }
 
 type saobracjanaServiceImpl struct {
@@ -42,6 +45,7 @@ func (s saobracjanaServiceImpl) SaveNalog(noviNalog data.PrekrsajniNalog) (*data
 	noviNalog.Datum = time.Now()
 	nalog, err := s.saobracjanaRepo.SaveNalog(noviNalog)
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There was problem while saving nalog")
 	}
 	return &data.PrekrsajniNalogDTO{
@@ -65,15 +69,36 @@ func (s saobracjanaServiceImpl) GetStanice() ([]data.PolicijskaStanica, error) {
 func (s saobracjanaServiceImpl) GetPdfNalog(nalogId string) (*data.FileDto, error) {
 	nalog, err := s.saobracjanaRepo.GetPrekrajniNalog(nalogId)
 	if err != nil || nalog == nil {
+		log.Fatal(err)
 		return nil, errors.New("Cant find nalog with specified id")
 	}
 	pdf, err := GeneratePdf(*nalog)
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with generating pdf")
 	}
 	fileDto, err := s.FileService.SavePdf(pdf)
 	if err != nil {
+		log.Fatal(err)
 		return nil, errors.New("There has been problem with saving pdf")
 	}
 	return &fileDto, nil
+}
+
+func (s saobracjanaServiceImpl) GetVozacka(jmbg string) (*data.VozackaDozvola, error) {
+	vozacka, err := s.MupService.GetVozacka(jmbg)
+	if err != nil {
+		log.Fatal(err)
+		return nil, errors.New("There has been problem while getting vozacka from mup")
+	}
+	return vozacka, nil
+}
+
+func (s saobracjanaServiceImpl) GetSaobracjana(tablica string) (*data.SaobracjanaDozvola, error) {
+	saobracjana, err := s.MupService.GetSaobracjana(tablica)
+	if err != nil {
+		log.Fatal(err)
+		return nil, errors.New("There has been problem while getting saobracajna from mup")
+	}
+	return saobracjana, nil
 }
