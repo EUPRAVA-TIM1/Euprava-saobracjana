@@ -18,7 +18,7 @@ type CustomTime struct {
 }
 
 func (t *CustomTime) UnmarshalJSON(b []byte) error {
-	// Custom parsing logic for your date format
+	// Custom parsing logic for  date format
 	// Example: "2006-01-02T15:04:05Z"
 	parsedTime, err := time.Parse(`"2006-01-02T15:04:05Z"`, string(b))
 	if err != nil {
@@ -76,7 +76,7 @@ type PrekrsajniNalogDTO struct {
 }
 
 type SudskiNalog struct {
-	Id             int       `json:"id"`
+	Id             int64     `json:"id"`
 	Datum          time.Time `json:"datum"`
 	Naslov         string    `json:"naslov"`
 	Opis           string    `json:"opis"`
@@ -84,8 +84,19 @@ type SudskiNalog struct {
 	JMBGSluzbenika string    `json:"JMBGSluzbenika"`
 	Optuzeni       string    `json:"Optuzeni"`
 	JMBGoptuzenog  string    `json:"JMBGoptuzenog"`
-	StatusSlucaja  *string   `json:"statusSlucaja"`
+	StatusSlucaja  string    `json:"statusSlucaja"`
 	Dokumenti      []string  `json:"dokumenti"`
+}
+
+type SudskiNalogDTO struct {
+	Id            int64     `json:"id"`
+	Datum         time.Time `json:"datum"`
+	Naslov        string    `json:"naslov"`
+	Opis          string    `json:"opis"`
+	Optuzeni      string    `json:"optuzeni"`
+	JMBGoptuzenog string    `json:"JMBGoptuzenog"`
+	StatusSlucaja string    `json:"statusSlucaja"`
+	Dokumenti     []string  `json:"dokumenti"`
 }
 
 type PrijavaKradjeVozila struct {
