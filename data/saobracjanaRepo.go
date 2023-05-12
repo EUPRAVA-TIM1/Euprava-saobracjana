@@ -10,4 +10,5 @@ type SaobracajnaRepo interface {
 	GetPrekrajniNalog(nalogId string) (*PrekrsajniNalog, error)
 	GetZaposleni(jmbg string) (*Zaposleni, error)
 	SaveSudskiNalog(nalog SudskiNalog) (*SudskiNalog, error)
+	UpdateSudNalogStatus(id, status string) error
 }

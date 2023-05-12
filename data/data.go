@@ -9,6 +9,14 @@ type Secret struct {
 	ExpiresAt CustomTime `json:"expiresAt"`
 }
 
+type SudStatusDTO struct {
+	Status string `json:"status"`
+}
+
+type DokaziDTO struct {
+	Dokumenti []string `json:"dokumenti"`
+}
+
 type FileDto struct {
 	Name string `json:"name"`
 }

@@ -19,6 +19,7 @@ type SaobracajnaService interface {
 	GetVozacka(jmbg string) (*data.VozackaDozvola, error)
 	GetSaobracjana(tablica string) (*data.SaobracjanaDozvola, error)
 	SaveSudskiNalog(nalog data.SudskiNalog) (*data.SudskiNalog, error)
+	UpdateSudNalogStatus(id string, status data.SudStatusDTO) error
 }
 
 type saobracjanaServiceImpl struct {
@@ -130,4 +131,13 @@ func (s saobracjanaServiceImpl) SaveSudskiNalog(nalog data.SudskiNalog) (*data.S
 		return nil, errors.New("There is problem with saving nalog to db")
 	}
 	return savedNalog, nil
+}
+
+func (s saobracjanaServiceImpl) UpdateSudNalogStatus(id string, status data.SudStatusDTO) error {
+	err := s.saobracjanaRepo.UpdateSudNalogStatus(id, status.Status)
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("There is problem with saving nalog status to db")
+	}
+	return nil
 }

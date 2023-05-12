@@ -43,13 +43,14 @@ use eupravaMilicija;
         Vrednost integer,
 		primary key (Id)
     );
-    
+
     create table if not exists SlikeNaloga(
 		NalogId int auto_increment,
         UrlSlike varchar(100) ,
         foreign key (NalogId) references PrekrsajniNalog(Id),
         primary key (NalogId,UrlSlike)
     );
+
     create table if not exists SudskiNalog(
 		Id int auto_increment,
         Datum date not null,
