@@ -22,6 +22,7 @@ type SaobracajnaService interface {
 	GetPolicajacNeIzvrseniNalozi(jmbg string) ([]data.PrekrsajniNalogDTO, error)
 	UpdatePrekrsajNalogIzvrsen(id, tokenSluzbenika string) error
 	SendDokazi(idNaloga string, dto data.DokaziDTO) error
+	GetAktivniSlucajvei(jmbg string) ([]*data.SudskiSlucaj, error)
 }
 
 type saobracjanaServiceImpl struct {
@@ -188,4 +189,13 @@ func (s saobracjanaServiceImpl) SendDokazi(idNaloga string, dto data.DokaziDTO) 
 		return errors.New("There was problem while saving dokazi")
 	}
 	return nil
+}
+
+func (s saobracjanaServiceImpl) GetAktivniSlucajvei(jmbg string) ([]*data.SudskiSlucaj, error) {
+	slucajevi, err := s.sudService.GetGradjaninSlucajevi(jmbg)
+	if err != nil {
+		log.Fatal(err)
+		return nil, errors.New("There was problem while saving dokazi")
+	}
+	return slucajevi, nil
 }

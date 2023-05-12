@@ -160,7 +160,14 @@ func (s saobracjanaHandler) GetPdfNalog(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s saobracjanaHandler) ProveraOsobeSud(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	slucajevi, err := s.saobracjanaService.GetAktivniSlucajvei(jmbg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(slucajevi, w, http.StatusOK)
 }
 
 func (s saobracjanaHandler) SetSudNalogStatus(w http.ResponseWriter, r *http.Request) {

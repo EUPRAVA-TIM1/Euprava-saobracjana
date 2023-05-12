@@ -140,3 +140,10 @@ type SaobracjanaDozvola struct {
 	StatusRegistracije string     `json:"statusRegistracije"`
 	PrijavljenaKradja  *time.Time `json:"prijavljenaKradja",omitempty`
 }
+
+type SudskiSlucaj struct {
+	Datum  time.Time `json:"datum"`
+	Naslov string    `json:"naslov"`
+	Opis   string    `json:"opis"`
+	Status string    `json:"status"`
+}
