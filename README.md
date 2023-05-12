@@ -28,24 +28,6 @@ in [this repo](https://github.com/EUPRAVA-TIM1/DockerCompose). Ports can be seen
     kaznaIzvrsena bool
 }
 ```
-- `GET /saobracajna/Gradjanin/Nalozi/{jmbg}` Gets all user prekrsajniNalozi.\
-**Expects** `Authorization` header with JWT token(with or without Barrer) and JMBG of a gradjanin as a url param \
-**Returns** Json arrat of nalozi in this format:
-```
-{
-"id": int,
-"datum": date,
-"opis": string,
-"izdatoOdStrane": string,
-"izdatoZa": string,
-"JMBGZapisanog": string,
-"tipPrekrsaja" : string,
-"jedinicaMere" : string | null,
-"vrednost": string | null,
-slike: []string,
-kaznaIzvrsena bool
-}
-```
 - `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Gets all user prekrsajniNalozi.\
   **Expects** `Authorization` header with JWT token(with or without Barrer) id of nalog as url param and json with status in this format:
 ```
