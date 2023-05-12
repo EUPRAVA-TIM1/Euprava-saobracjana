@@ -419,6 +419,41 @@ func (s SaobracjanaRepoSql) UpdateSudNalogStatus(id, status string) error {
 	return nil
 }
 
+func (s SaobracjanaRepoSql) UpdatePrekrsajNalogIzvrsen(id string) error {
+	db, err := s.OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+		return errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+
+	query := "UPDATE PrekrsajniNalog SET KaznaIzvrsena = true WHERE Id = ?"
+	_, err = db.Exec(query, id)
+	if err != nil {
+		log.Fatal(err)
+		return fmt.Errorf("failed to insert secret key: %v", err)
+	}
+	return nil
+}
+
+func (s SaobracjanaRepoSql) UpdateSudNalogDokazi(nalogId string, dto data.DokaziDTO) error {
+	db, err := s.OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+		return errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+	for i := 0; i < len(dto.Dokumenti); i++ {
+		query := "INSERT INTO DokumentiSudskogNaloga(NalogId,UrlDokumenta) VALUES (?,?)"
+		_, err := db.Exec(query, nalogId, dto.Dokumenti[i])
+		if err != nil {
+			log.Fatal(err)
+			return fmt.Errorf("failed to insert secret key: %v", err)
+		}
+	}
+	return nil
+}
+
 func (s SaobracjanaRepoSql) OpenConnection() (*sql.DB, error) {
 	return sql.Open("mysql", fmt.Sprintf("root:%s@tcp(%s:%s)/%s", s.pass, s.host, s.port, schema))
 }

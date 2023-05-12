@@ -40,7 +40,7 @@ use eupravaMilicija;
         JMBGZapisanog varchar(13) not null,
         TipPrekrsaja enum('POJAS','PREKORACENJE_BRZINE','PIJANA_VOZNJA','TEHNICKA_NEISPRAVNOST','PRVA_POMOC','NEMA_VOZACKU','REGISTRACIJA') not null,
         JedinicaMere enum ('promil','km/h'),
-        Vrednost integer,
+        Vrednost float,
         KaznaIzvrsena bool default false not null ,
 		primary key (Id)
     );

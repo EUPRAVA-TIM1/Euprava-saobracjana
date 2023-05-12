@@ -9,6 +9,7 @@ import (
 type JwtService interface {
 	Validate(jwt string) bool
 	IsAWorker(jwt string) bool
+	GetSecret() *data.Secret
 }
 
 type jwtServiceImpl struct {

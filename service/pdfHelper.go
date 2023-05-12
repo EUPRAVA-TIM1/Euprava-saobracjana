@@ -28,7 +28,10 @@ func GeneratePdf(nalog data.PrekrsajniNalog) ([]byte, error) {
 	pdf.CellFormat(0, 10, fmt.Sprintf("Izdato za: %s,   JMBG Zapisanog: %s", nalog.IzdatoZa, nalog.JMBGZapisanog), "1", 1, "", false, 0, "")
 	pdf.Ln(8)
 	if nalog.Vrednost != nil {
-		pdf.CellFormat(0, 10, fmt.Sprintf("Tip prekršaja: %s,   Jedinica mere: %s,   Vrednost: %s", formateType(nalog.TipPrekrsaja), formateUnit(nalog.JedinicaMere), strconv.Itoa(*nalog.Vrednost)), "1", 1, "", false, 0, "")
+		pdf.CellFormat(0, 10, fmt.Sprintf("Tip prekršaja: %s ", formateType(nalog.TipPrekrsaja)), "1", 1, "", false, 0, "")
+		pdf.Ln(8)
+		pdf.CellFormat(0, 10, fmt.Sprintf("Jedinica mere: %s,   Vrednost: %s", formateUnit(nalog.JedinicaMere), strconv.FormatFloat(*nalog.Vrednost, 'f', 2, 64)), "1", 1, "", false, 0, "")
+
 	} else {
 		pdf.CellFormat(0, 10, fmt.Sprintf("Tip prekršaja: %s,   Jedinica mere: %s,   Vrednost: %s", formateType(nalog.TipPrekrsaja), formateUnit(nalog.JedinicaMere), "n/a"), "1", 1, "", false, 0, "")
 
