@@ -41,15 +41,17 @@ use eupravaMilicija;
         TipPrekrsaja enum('POJAS','PREKORACENJE_BRZINE','PIJANA_VOZNJA','TEHNICKA_NEISPRAVNOST','PRVA_POMOC','NEMA_VOZACKU','REGISTRACIJA') not null,
         JedinicaMere enum ('promil','km/h'),
         Vrednost integer,
+        KaznaIzvrsena bool default false not null ,
 		primary key (Id)
     );
-    
+
     create table if not exists SlikeNaloga(
 		NalogId int auto_increment,
         UrlSlike varchar(100) ,
         foreign key (NalogId) references PrekrsajniNalog(Id),
         primary key (NalogId,UrlSlike)
     );
+
     create table if not exists SudskiNalog(
 		Id int auto_increment,
         Datum date not null,

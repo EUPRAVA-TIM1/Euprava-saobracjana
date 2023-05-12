@@ -9,6 +9,14 @@ type Secret struct {
 	ExpiresAt CustomTime `json:"expiresAt"`
 }
 
+type SudStatusDTO struct {
+	Status string `json:"status"`
+}
+
+type DokaziDTO struct {
+	Dokumenti []string `json:"dokumenti"`
+}
+
 type FileDto struct {
 	Name string `json:"name"`
 }
@@ -58,7 +66,8 @@ type PrekrsajniNalog struct {
 	JMBGZapisanog  string    `json:"JMBGZapisanog", len=13`
 	TipPrekrsaja   string    `json:"tipPrekrsaja", required`
 	JedinicaMere   *string   `json:"jedinicaMere"`
-	Vrednost       *int      `json:"vrednost", min=0`
+	Vrednost       *float64  `json:"vrednost", min=0`
+	KaznaIzvrsena  bool      `json:"kaznaIzvrsena"`
 	Slike          []string  `json:"slike"`
 }
 
@@ -71,8 +80,9 @@ type PrekrsajniNalogDTO struct {
 	JMBGZapisanog  string    `json:"JMBGZapisanog"`
 	TipPrekrsaja   string    `json:"tipPrekrsaja"`
 	JedinicaMere   *string   `json:"jedinicaMere"`
-	Vrednost       *int      `json:"vrednost"`
+	Vrednost       *float64  `json:"vrednost"`
 	Slike          []string  `json:"slike"`
+	KaznaIzvrsena  bool      `json:"kaznaIzvrsena"`
 }
 
 type SudskiNalog struct {
