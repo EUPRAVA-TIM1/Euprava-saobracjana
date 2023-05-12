@@ -30,11 +30,16 @@ func (s saobracjanaHandler) Init(r *mux.Router) {
 	r.HandleFunc("/saobracajna/Policajac/Authorise", s.IsAuthorized(s.Authorise, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/KradjaVozila", s.IsAuthorized(s.PostKradjaVozila, false)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Nalozi", s.IsAuthorized(s.PostNalog, true)).Methods("POST", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi", s.IsAuthorized(s.PostSudskiNalog, true)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacNalozi, true)).Methods("GET", "OPTIONS")
-	r.HandleFunc("/saobracajna/Policajac/Nalozi/Sud/{jmbg}", s.IsAuthorized(s.GetPolicajacSudNalozi, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Nalozi/NotIzvrseni/{jmbg}", s.IsAuthorized(s.GetPolicajacNeIzvrseniNalozi, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacSudskiNalozi, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/Status/{id}", s.IsAuthorized(s.SetSudNalogStatus, false)).Methods("PUT", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/Dokazi/{id}", s.IsAuthorized(s.SendSudNalogDokazi, true)).Methods("PUT", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Nalozi/Izvrsi/{id}", s.IsAuthorized(s.SetPrekrsajNalogIzvrsen, true)).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/Sud/{jmbg}", s.IsAuthorized(s.ProveraOsobeSud, true)).Methods("GET", "OPTIONS")
-	r.HandleFunc("/saobracajna/Policajac/Provera/Osoba/Mup/{jmbg}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
-	r.HandleFunc("/saobracajna/Policajac/Provera/Vozilo/Mup/{tablica}", s.IsAuthorized(s.ProveraVozilaMup, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/VozackaDozvola/Mup/{brojVozacke}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Provera/SaobracjanaDozvola/Mup/{tablica}", s.IsAuthorized(s.ProveraVozilaMup, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Nalog/{id}", s.IsAuthorized(s.GetPdfNalog, true)).Methods("GET", "OPTIONS")
 
 	http.Handle("/", r)
@@ -95,12 +100,49 @@ func (s saobracjanaHandler) PostNalog(w http.ResponseWriter, r *http.Request) {
 	jsonResponse(savedNalog, w, http.StatusOK)
 }
 
+func (s saobracjanaHandler) PostSudskiNalog(w http.ResponseWriter, r *http.Request) {
+	var nalog data.SudskiNalog
+	err := json.NewDecoder(r.Body).Decode(&nalog)
+	if err != nil {
+		http.Error(w, "Problem with decoding JSON", http.StatusBadRequest)
+		return
+	}
+	savedNalog, err := s.saobracjanaService.SaveSudskiNalog(nalog)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	jsonResponse(savedNalog, w, http.StatusOK)
+}
+
 func (s saobracjanaHandler) GetPolicajacNalozi(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	jmbg := vars["jmbg"]
 	nalozi, err := s.saobracjanaService.GetPolcajacPrekrsajneNaloge(jmbg)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, "There has been error with getting nalozi", http.StatusNotFound)
+		return
+	}
+	jsonResponse(nalozi, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) GetPolicajacNeIzvrseniNalozi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	nalozi, err := s.saobracjanaService.GetPolicajacNeIzvrseniNalozi(jmbg)
+	if err != nil {
+		http.Error(w, "There has been error with getting nalozi", http.StatusNotFound)
+		return
+	}
+	jsonResponse(nalozi, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) GetPolicajacSudskiNalozi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	nalozi, err := s.saobracjanaService.GetPolcajacSudskeNaloge(jmbg)
+	if err != nil {
+		http.Error(w, "There has been error with getting nalozi", http.StatusNotFound)
 		return
 	}
 	jsonResponse(nalozi, w, http.StatusOK)
@@ -117,20 +159,83 @@ func (s saobracjanaHandler) GetPdfNalog(w http.ResponseWriter, r *http.Request) 
 	jsonResponse(fileDto, w, http.StatusOK)
 }
 
-func (s saobracjanaHandler) GetPolicajacSudNalozi(w http.ResponseWriter, r *http.Request) {
-
+func (s saobracjanaHandler) ProveraOsobeSud(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	slucajevi, err := s.saobracjanaService.GetAktivniSlucajvei(jmbg)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(slucajevi, w, http.StatusOK)
 }
 
-func (s saobracjanaHandler) ProveraOsobeSud(w http.ResponseWriter, r *http.Request) {
+func (s saobracjanaHandler) SetSudNalogStatus(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	var status data.SudStatusDTO
+	err := json.NewDecoder(r.Body).Decode(&status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = s.saobracjanaService.UpdateSudNalogStatus(id, status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonResponse("", w, http.StatusOK)
+}
 
+func (s saobracjanaHandler) SendSudNalogDokazi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	var dokazi data.DokaziDTO
+	err := json.NewDecoder(r.Body).Decode(&dokazi)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = s.saobracjanaService.SendDokazi(id, dokazi)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonResponse("", w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) SetPrekrsajNalogIzvrsen(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	token := extractBearerToken(r.Header.Get("Authorization"))
+	err := s.saobracjanaService.UpdatePrekrsajNalogIzvrsen(id, token)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	jsonResponse("", w, http.StatusOK)
 }
 
 func (s saobracjanaHandler) ProveraOsobeMup(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	brojVozacke := vars["brojVozacke"]
+	vozacka, err := s.saobracjanaService.GetVozacka(brojVozacke)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(vozacka, w, http.StatusOK)
 }
 
 func (s saobracjanaHandler) ProveraVozilaMup(w http.ResponseWriter, r *http.Request) {
-
+	vars := mux.Vars(r)
+	tablica := vars["tablica"]
+	saobracjana, err := s.saobracjanaService.GetSaobracjana(tablica)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	jsonResponse(saobracjana, w, http.StatusOK)
 }
 
 func jsonResponse(object interface{}, w http.ResponseWriter, status int) {
