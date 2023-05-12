@@ -27,6 +27,7 @@ in [this repo](https://github.com/EUPRAVA-TIM1/DockerCompose). Ports can be seen
     slike: []string,
     kaznaIzvrsena bool
 }
+```
 - `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Gets all user prekrsajniNalozi.\
   **Expects** `Authorization` header with JWT token(with or without Barrer) id of nalog as url param and json with status in this format:
 ```
