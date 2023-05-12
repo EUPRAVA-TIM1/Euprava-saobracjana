@@ -9,6 +9,7 @@ type MupService interface {
 	SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error
 	GetVozacka(jmbg string) (*data.VozackaDozvola, error)
 	GetSaobracjana(tablica string) (*data.SaobracjanaDozvola, error)
+	SendPoints(points int) error
 }
 
 type mupServiceImpl struct {
@@ -17,6 +18,11 @@ type mupServiceImpl struct {
 
 func NewMupService(url string) MupService {
 	return mupServiceImpl{serviceUrl: url}
+}
+
+func (m mupServiceImpl) SendPoints(points int) error {
+	//TODO implement me
+	return nil
 }
 
 func (m mupServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error {

@@ -37,7 +37,7 @@ func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.Pre
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
-	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where JMBGSluzbenika = ?;"
+	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost,KaznaIzvrsena FROM PrekrsajniNalog where JMBGSluzbenika = ?;"
 	rows, err := db.Query(query, JMBG)
 	if err != nil {
 		log.Fatal(err)
@@ -47,7 +47,55 @@ func (s SaobracjanaRepoSql) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.Pre
 	for rows.Next() {
 		var nalog data.PrekrsajniNalogDTO
 		var dateStr string
-		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
+		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost, &nalog.KaznaIzvrsena)
+		if err != nil {
+			log.Fatal(err)
+		}
+		datum, err := time.Parse("2006-01-02", dateStr)
+		if err != nil {
+			log.Fatal(err)
+			panic(err.Error())
+		}
+		nalog.Datum = datum
+		var imgs = make([]string, 0)
+		imgQuery := "select UrlSlike from SlikeNaloga where NalogId = ?;"
+		imgRows, err := db.Query(imgQuery, nalog.Id)
+		if err != nil {
+			log.Fatal(err)
+			return nil, errors.New("There has been problem with reading imgs from db")
+		}
+		for imgRows.Next() {
+			var url string
+			err := imgRows.Scan(&url)
+			if err != nil {
+				log.Fatal(err)
+			}
+			imgs = append(imgs, url)
+		}
+		nalog.Slike = imgs
+		nalozi = append(nalozi, nalog)
+	}
+	return nalozi, nil
+}
+
+func (s SaobracjanaRepoSql) GetPolcajacNeIzvrsenePrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
+	db, err := s.OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+		return nil, errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost,KaznaIzvrsena FROM PrekrsajniNalog where JMBGSluzbenika = ? and KaznaIzvrsena = false;"
+	rows, err := db.Query(query, JMBG)
+	if err != nil {
+		log.Fatal(err)
+		return nil, errors.New("There has been problem with reading nalog from db")
+	}
+	nalozi := make([]data.PrekrsajniNalogDTO, 0)
+	for rows.Next() {
+		var nalog data.PrekrsajniNalogDTO
+		var dateStr string
+		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost, &nalog.KaznaIzvrsena)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -126,14 +174,14 @@ func (s SaobracjanaRepoSql) GetPolicajacSudskeNaloge(JMBG string) ([]data.Sudski
 	return nalozi, nil
 }
 
-func (s SaobracjanaRepoSql) GetPrekrajniNalog(nalogId string) (*data.PrekrsajniNalog, error) {
+func (s SaobracjanaRepoSql) GetPrekrsajniNalog(nalogId string) (*data.PrekrsajniNalog, error) {
 	db, err := s.OpenConnection()
 	if err != nil {
 		log.Fatal(err)
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
-	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,JMBGSluzbenika,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where id = ?;"
+	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,JMBGSluzbenika,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost,KaznaIzvrsena FROM PrekrsajniNalog where id = ?;"
 	rows, err := db.Query(query, nalogId)
 	if err != nil {
 		log.Fatal(err)
@@ -142,7 +190,7 @@ func (s SaobracjanaRepoSql) GetPrekrajniNalog(nalogId string) (*data.PrekrsajniN
 	var nalog data.PrekrsajniNalog
 	for rows.Next() {
 		var dateStr string
-		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.JMBGSluzbenika, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
+		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.JMBGSluzbenika, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost, &nalog.KaznaIzvrsena)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -178,7 +226,7 @@ func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.Pr
 		return nil, errors.New("There has been problem with connectiong to db")
 	}
 	defer db.Close()
-	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost FROM PrekrsajniNalog where JMBGZapisanog = ?;"
+	query := "SELECT Id,Datum,Opis,IzdatoOdStrane,IzdatoZa,JMBGZapisanog,TipPrekrsaja,JedinicaMere,Vrednost,KaznaIzvrsena FROM PrekrsajniNalog where JMBGZapisanog = ?;"
 	rows, err := db.Query(query, JMBG)
 	if err != nil {
 		log.Fatal(err)
@@ -188,7 +236,7 @@ func (s SaobracjanaRepoSql) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.Pr
 	for rows.Next() {
 		var nalog data.PrekrsajniNalogDTO
 		var dateStr string
-		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost)
+		err := rows.Scan(&nalog.Id, &dateStr, &nalog.Opis, &nalog.IzdatoOdStrane, &nalog.IzdatoZa, &nalog.JMBGZapisanog, &nalog.TipPrekrsaja, &nalog.JedinicaMere, &nalog.Vrednost, &nalog.KaznaIzvrsena)
 		if err != nil {
 			log.Fatal(err)
 			panic(err.Error())
@@ -298,8 +346,8 @@ func (s SaobracjanaRepoSql) SaveNalog(nalog data.PrekrsajniNalog) (*data.Prekrsa
 	}
 	defer db.Close()
 
-	query := "INSERT INTO PrekrsajniNalog ( Datum, Opis, IzdatoOdStrane, JMBGSluzbenika, IzdatoZa, JMBGZapisanog, TipPrekrsaja, JedinicaMere, Vrednost) VALUES (?,?,?,?,?,?,?,?,?)"
-	res, err := db.Exec(query, nalog.Datum, nalog.Opis, nalog.IzdatoOdStrane, nalog.JMBGSluzbenika, nalog.IzdatoZa, nalog.JMBGZapisanog, nalog.TipPrekrsaja, nalog.JedinicaMere, nalog.Vrednost)
+	query := "INSERT INTO PrekrsajniNalog ( Datum, Opis, IzdatoOdStrane, JMBGSluzbenika, IzdatoZa, JMBGZapisanog, TipPrekrsaja, JedinicaMere, Vrednost,KaznaIzvrsena) VALUES (?,?,?,?,?,?,?,?,?,?)"
+	res, err := db.Exec(query, nalog.Datum, nalog.Opis, nalog.IzdatoOdStrane, nalog.JMBGSluzbenika, nalog.IzdatoZa, nalog.JMBGZapisanog, nalog.TipPrekrsaja, nalog.JedinicaMere, nalog.Vrednost, nalog.KaznaIzvrsena)
 	if err != nil {
 		log.Fatal(err)
 		return nil, fmt.Errorf("failed to insert secret key: %v", err)

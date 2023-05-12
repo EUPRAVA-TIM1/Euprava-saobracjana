@@ -11,7 +11,6 @@ type SaobracajnaService interface {
 	GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error)
 	GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error)
 	GetPolcajacSudskeNaloge(JMBG string) ([]data.SudskiNalogDTO, error)
-
 	GetStanice() ([]data.PolicijskaStanica, error)
 	SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error
 	SaveNalog(nalog data.PrekrsajniNalog) (*data.PrekrsajniNalogDTO, error)
@@ -20,6 +19,7 @@ type SaobracajnaService interface {
 	GetSaobracjana(tablica string) (*data.SaobracjanaDozvola, error)
 	SaveSudskiNalog(nalog data.SudskiNalog) (*data.SudskiNalog, error)
 	UpdateSudNalogStatus(id string, status data.SudStatusDTO) error
+	GetPolicajacNeIzvrseniNalozi(jmbg string) ([]data.PrekrsajniNalogDTO, error)
 }
 
 type saobracjanaServiceImpl struct {
@@ -39,7 +39,10 @@ func (s saobracjanaServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozi
 
 func (s saobracjanaServiceImpl) GetPolcajacPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
 	return s.saobracjanaRepo.GetPolcajacPrekrsajneNaloge(JMBG)
+}
 
+func (s saobracjanaServiceImpl) GetPolicajacNeIzvrseniNalozi(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
+	return s.saobracjanaRepo.GetPolcajacNeIzvrsenePrekrsajneNaloge(JMBG)
 }
 
 func (s saobracjanaServiceImpl) GetGradjaninPrekrsajneNaloge(JMBG string) ([]data.PrekrsajniNalogDTO, error) {
@@ -52,6 +55,16 @@ func (s saobracjanaServiceImpl) GetPolcajacSudskeNaloge(JMBG string) ([]data.Sud
 
 func (s saobracjanaServiceImpl) SaveNalog(noviNalog data.PrekrsajniNalog) (*data.PrekrsajniNalogDTO, error) {
 	noviNalog.Datum = time.Now()
+	if noviNalog.KaznaIzvrsena {
+		points := CalculatePointsForTicket(noviNalog)
+		if points != 0 {
+			err := s.MupService.SendPoints(points)
+			if err != nil {
+				log.Fatal(err)
+				return nil, errors.New("There was problem while sending nalog points to MUP")
+			}
+		}
+	}
 	nalog, err := s.saobracjanaRepo.SaveNalog(noviNalog)
 	if err != nil {
 		log.Fatal(err)
@@ -76,7 +89,7 @@ func (s saobracjanaServiceImpl) GetStanice() ([]data.PolicijskaStanica, error) {
 }
 
 func (s saobracjanaServiceImpl) GetPdfNalog(nalogId string) (*data.FileDto, error) {
-	nalog, err := s.saobracjanaRepo.GetPrekrajniNalog(nalogId)
+	nalog, err := s.saobracjanaRepo.GetPrekrsajniNalog(nalogId)
 	if err != nil || nalog == nil {
 		log.Fatal(err)
 		return nil, errors.New("Cant find nalog with specified id")

@@ -32,6 +32,7 @@ func (s saobracjanaHandler) Init(r *mux.Router) {
 	r.HandleFunc("/saobracajna/Policajac/Nalozi", s.IsAuthorized(s.PostNalog, true)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi", s.IsAuthorized(s.PostSudskiNalog, true)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacNalozi, true)).Methods("GET", "OPTIONS")
+	r.HandleFunc("/saobracajna/Policajac/Nalozi/NotIzvrseni/{jmbg}", s.IsAuthorized(s.GetPolicajacNeIzvrseniNalozi, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacSudskiNalozi, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/Status/{id}", s.IsAuthorized(s.SetSudNalogStatus, false)).Methods("POST", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/Sud/{jmbg}", s.IsAuthorized(s.ProveraOsobeSud, true)).Methods("GET", "OPTIONS")
@@ -116,6 +117,17 @@ func (s saobracjanaHandler) GetPolicajacNalozi(w http.ResponseWriter, r *http.Re
 	vars := mux.Vars(r)
 	jmbg := vars["jmbg"]
 	nalozi, err := s.saobracjanaService.GetPolcajacPrekrsajneNaloge(jmbg)
+	if err != nil {
+		http.Error(w, "There has been error with getting nalozi", http.StatusNotFound)
+		return
+	}
+	jsonResponse(nalozi, w, http.StatusOK)
+}
+
+func (s saobracjanaHandler) GetPolicajacNeIzvrseniNalozi(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jmbg := vars["jmbg"]
+	nalozi, err := s.saobracjanaService.GetPolicajacNeIzvrseniNalozi(jmbg)
 	if err != nil {
 		http.Error(w, "There has been error with getting nalozi", http.StatusNotFound)
 		return
