@@ -28,7 +28,7 @@ in [this repo](https://github.com/EUPRAVA-TIM1/DockerCompose). Ports can be seen
     kaznaIzvrsena bool
 }
 ```
-- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Gets all user prekrsajniNalozi.\
+- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}`Upadtes status of user Sud Nalog.\
   **Expects** `Authorization` header with JWT token(with or without Barrer) id of nalog as url param and JSON with status in this format:
 ```
 {
