@@ -2,7 +2,7 @@ package service
 
 import (
 	"EuprvaSaobracajna/data"
-	"fmt"
+	"log"
 	"time"
 )
 
@@ -27,7 +27,7 @@ func (j jwtServiceImpl) Validate(jwt string) bool {
 	err := ValidateJwt(jwt, secret.Secret)
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Fatal(err.Error())
 		return false
 	}
 	return true

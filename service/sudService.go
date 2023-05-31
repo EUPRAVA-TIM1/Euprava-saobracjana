@@ -2,9 +2,9 @@ package service
 
 import (
 	"EuprvaSaobracajna/data"
+	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 
 type SudService interface {
 	SendNalog(nalog data.SudskiNalog) error
-	GetGradjaninSlucajevi(jmbg string) (slucajevi []*data.SudskiSlucaj, err error)
+	GetGradjaninSlucajevi(jmbg string) (slucajevi []data.SudskiSlucaj, err error)
 }
 
 type sudServiceImpl struct {
@@ -24,18 +24,39 @@ func NewSudService(url string) SudService {
 	return sudServiceImpl{serviceUrl: url}
 }
 
-func (s sudServiceImpl) SendNalog(nalog data.SudskiNalog) error {
-	fmt.Println(nalog)
-	//TODO implement me
-	return nil
+func (s sudServiceImpl) SendNalog(nalog data.SudskiNalog) (err error) {
+	u, err := url.Parse(s.serviceUrl + "/api/prekrsajnaprijava")
+	if err != nil {
+		return
+	}
+	nalog.StatusSlucaja = "0"
+	json, err := json.Marshal(nalog)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	client := http.Client{}
+	req, err := http.NewRequest("POST", u.String(), bytes.NewReader(json))
+	req.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(req)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	if response.StatusCode == http.StatusOK {
+		return
+	}
+	err = errors.New("can not reach Sud service")
+	return
 }
 
-type slucajeviWrapper struct {
-	id     int                  `json:"$id"`
-	values []*data.SudskiSlucaj `json:"$values"`
+type SlucajeviWrapper struct {
+	Values []data.SudskiSlucaj `json:"$values"`
 }
 
-func (s sudServiceImpl) GetGradjaninSlucajevi(jmbg string) (slucajevi []*data.SudskiSlucaj, err error) {
+func (s sudServiceImpl) GetGradjaninSlucajevi(jmbg string) (slucajevi []data.SudskiSlucaj, err error) {
 	u, err := url.Parse(s.serviceUrl + "/api/predmet/gradjanin/" + jmbg)
 	if err != nil {
 		return
@@ -59,13 +80,12 @@ func (s sudServiceImpl) GetGradjaninSlucajevi(jmbg string) (slucajevi []*data.Su
 	}(response.Body)
 
 	if response.StatusCode == http.StatusOK {
-		var retVal slucajeviWrapper
+		var retVal SlucajeviWrapper
 		err = json.NewDecoder(response.Body).Decode(&retVal)
 		if err != nil {
 			log.Fatal(err)
 		}
-		slucajevi = retVal.values
-		fmt.Println(slucajevi)
+		slucajevi = retVal.Values
 		return
 	}
 	err = errors.New("can not reach Sud service")

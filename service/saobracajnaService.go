@@ -21,7 +21,7 @@ type SaobracajnaService interface {
 	UpdateSudNalogStatus(id string, status data.SudStatusDTO) error
 	GetPolicajacNeIzvrseniNalozi(jmbg string) ([]data.PrekrsajniNalogDTO, error)
 	UpdatePrekrsajNalogIzvrsen(id, tokenSluzbenika string) error
-	GetAktivniSlucajvei(jmbg string) ([]*data.SudskiSlucaj, error)
+	GetAktivniSlucajvei(jmbg string) ([]data.SudskiSlucaj, error)
 }
 
 type saobracjanaServiceImpl struct {
@@ -181,7 +181,7 @@ func (s saobracjanaServiceImpl) UpdatePrekrsajNalogIzvrsen(id, tokenSluzbenika s
 	return nil
 }
 
-func (s saobracjanaServiceImpl) GetAktivniSlucajvei(jmbg string) ([]*data.SudskiSlucaj, error) {
+func (s saobracjanaServiceImpl) GetAktivniSlucajvei(jmbg string) ([]data.SudskiSlucaj, error) {
 	slucajevi, err := s.sudService.GetGradjaninSlucajevi(jmbg)
 	if err != nil {
 		log.Fatal(err)

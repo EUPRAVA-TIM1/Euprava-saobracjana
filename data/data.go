@@ -1,6 +1,8 @@
 package data
 
-import "time"
+import (
+	"time"
+)
 
 const (
 	Odbijen   int = 2
@@ -89,18 +91,23 @@ type PrekrsajniNalogDTO struct {
 }
 
 type SudskiNalog struct {
-	Id             int64     `json:"id"`
-	Datum          time.Time `json:"datum"`
-	Naslov         string    `json:"naslov"`
-	Opis           string    `json:"komentar"`
-	IzdatoOdStrane string    `json:"izdatoOdStrane"`
-	JMBGSluzbenika string    `json:"JMBGSluzbenika"`
-	Optuzeni       string    `json:"Optuzeni"`
-	JMBGoptuzenog  string    `json:"JMBGoptuzenog"`
-	StatusSlucaja  string    `json:"StatusPrekrsajnePrijave"`
-	Dokumenti      []string  `json:"dokumenti"`
-	Prekrsaj       int       `json:"prekrsaj"`
-	OpstinaPTT     string    `json:"opstinaPTT"`
+	Id                      int64     `json:"id"`
+	Datum                   time.Time `json:"datum"`
+	Naslov                  string    `json:"naslov"`
+	Opis                    string    `json:"komentar"`
+	IzdatoOdStrane          string    `json:"izdatoOdStrane"`
+	JMBGSluzbenika          string    `json:"JMBGSluzbenika"`
+	Optuzeni                string    `json:"Optuzeni"`
+	JMBGoptuzenog           string    `json:"JMBGoptuzenog"`
+	StatusSlucaja           string    `json:"StatusSlucaja"`
+	StatusPrekrsajnePrijave int       `json:"statusPrekrsajnePrijave"`
+	Dokumenti               []Docment `json:"dokumenti"`
+	Prekrsaj                int       `json:"prekrsaj"`
+	OpstinaPTT              string    `json:"opstinaPTT"`
+}
+
+type Docment struct {
+	UrlDokumenta string
 }
 
 type SudskiNalogDTO struct {
@@ -111,7 +118,7 @@ type SudskiNalogDTO struct {
 	Optuzeni      string    `json:"optuzeni"`
 	JMBGoptuzenog string    `json:"JMBGoptuzenog"`
 	StatusSlucaja string    `json:"statusSlucaja"`
-	Dokumenti     []string  `json:"dokumenti"`
+	Dokumenti     []Docment `json:"dokumenti"`
 }
 
 type PrijavaKradjeVozila struct {
@@ -147,8 +154,28 @@ type SaobracjanaDozvola struct {
 }
 
 type SudskiSlucaj struct {
-	Datum  time.Time `json:"datum"`
-	Naslov string    `json:"naslov"`
-	Opis   string    `json:"opis"`
-	Status string    `json:"status"`
+	Datum  Datum  `json:"datum"`
+	Naslov string `json:"naslov"`
+	Opis   string `json:"opis"`
+	Status int    `json:"status"`
+}
+
+type Datum struct {
+	MojDatum time.Time `json:"MojDatum"`
+}
+
+func (s *Datum) UnmarshalJSON(data []byte) error {
+	// Define custom time format
+	const customTimeLayout = `"2006-01-02T15:04:05.9999999"`
+
+	// Parse the time using the custom layout
+	parsedTime, err := time.Parse(customTimeLayout, string(data))
+	if err != nil {
+		return err
+	}
+
+	// Assign the parsed time to the struct field
+	s.MojDatum = parsedTime
+
+	return nil
 }
