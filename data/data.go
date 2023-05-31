@@ -92,20 +92,22 @@ type SudskiNalog struct {
 	Id             int64     `json:"id"`
 	Datum          time.Time `json:"datum"`
 	Naslov         string    `json:"naslov"`
-	Opis           string    `json:"opis"`
+	Opis           string    `json:"komentar"`
 	IzdatoOdStrane string    `json:"izdatoOdStrane"`
 	JMBGSluzbenika string    `json:"JMBGSluzbenika"`
 	Optuzeni       string    `json:"Optuzeni"`
 	JMBGoptuzenog  string    `json:"JMBGoptuzenog"`
 	StatusSlucaja  string    `json:"statusSlucaja"`
 	Dokumenti      []string  `json:"dokumenti"`
+	Prekrsaj       int       `json:"prekrsaj"`
+	OpstinaPTT     string    `json:"opstinaPTT"`
 }
 
 type SudskiNalogDTO struct {
 	Id            int64     `json:"id"`
 	Datum         time.Time `json:"datum"`
 	Naslov        string    `json:"naslov"`
-	Opis          string    `json:"opis"`
+	Opis          string    `json:"komentar"`
 	Optuzeni      string    `json:"optuzeni"`
 	JMBGoptuzenog string    `json:"JMBGoptuzenog"`
 	StatusSlucaja string    `json:"statusSlucaja"`

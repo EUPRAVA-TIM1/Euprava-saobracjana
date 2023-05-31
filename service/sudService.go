@@ -2,7 +2,13 @@ package service
 
 import (
 	"EuprvaSaobracajna/data"
-	"time"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/url"
 )
 
 type SudService interface {
@@ -23,20 +29,44 @@ func (s sudServiceImpl) SendNalog(nalog data.SudskiNalog, PTT string) error {
 	return nil
 }
 
+type slucajeviWrapper struct {
+	id     int                  `json:"$id"`
+	values []*data.SudskiSlucaj `json:"$values"`
+}
+
 func (s sudServiceImpl) GetGradjaninSlucajevi(jmbg string) (slucajevi []*data.SudskiSlucaj, err error) {
-	//TODO implement me
-	nalozi := make([]*data.SudskiSlucaj, 0)
-	nalozi = append(nalozi, &data.SudskiSlucaj{
-		Datum:  time.Now(),
-		Naslov: "Prekoracenje brzine u zoni skole",
-		Opis:   "lorem ipsum neki opis nmg sad da se setim bolje",
-		Status: "U_PROCESU",
-	})
-	nalozi = append(nalozi, &data.SudskiSlucaj{
-		Datum:  time.Now(),
-		Naslov: "Voznja pod dejstvom alkohola",
-		Opis:   "lorem ipsum neki opis nmg sad da se setim bolje",
-		Status: "U_PROCESU",
-	})
-	return nalozi, nil
+	u, err := url.Parse(s.serviceUrl + "/api/predmet/gradjanin/" + jmbg)
+	if err != nil {
+		return
+	}
+
+	client := http.Client{}
+	req, err := http.NewRequest("GET", u.String(), nil)
+
+	response, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+	}(response.Body)
+
+	if response.StatusCode == http.StatusOK {
+		var retVal slucajeviWrapper
+		err = json.NewDecoder(response.Body).Decode(&retVal)
+		if err != nil {
+			log.Fatal(err)
+		}
+		slucajevi = retVal.values
+		fmt.Println(slucajevi)
+		return
+	}
+	err = errors.New("can not reach Sud service")
+	return
 }

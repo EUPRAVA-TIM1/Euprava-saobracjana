@@ -135,6 +135,7 @@ func (s saobracjanaServiceImpl) SaveSudskiNalog(nalog data.SudskiNalog) (*data.S
 		return nil, errors.New("There is no policeman with that jmbg")
 	}
 	nalog.Datum = time.Now()
+	nalog.OpstinaPTT = zaposleni.RadiU.Opstina.PTT
 	err = s.sudService.SendNalog(nalog, zaposleni.RadiU.Opstina.PTT)
 	if err != nil {
 		log.Fatal(err.Error())
