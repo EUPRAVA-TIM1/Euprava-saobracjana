@@ -97,7 +97,7 @@ type SudskiNalog struct {
 	JMBGSluzbenika string    `json:"JMBGSluzbenika"`
 	Optuzeni       string    `json:"Optuzeni"`
 	JMBGoptuzenog  string    `json:"JMBGoptuzenog"`
-	StatusSlucaja  string    `json:"statusSlucaja"`
+	StatusSlucaja  string    `json:"StatusPrekrsajnePrijave"`
 	Dokumenti      []string  `json:"dokumenti"`
 	Prekrsaj       int       `json:"prekrsaj"`
 	OpstinaPTT     string    `json:"opstinaPTT"`
