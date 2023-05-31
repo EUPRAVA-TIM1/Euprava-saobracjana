@@ -46,7 +46,7 @@ slike: []string,
 kaznaIzvrsena bool
 }
 ```
-- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Gets all user prekrsajniNalozi.\
+- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Upadtes status of user Sud Nalog.\
   **Expects** `Authorization` header with JWT token(with or without Barrer) id of nalog as url param and json with status in this format:
 ```
 {

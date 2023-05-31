@@ -2,6 +2,13 @@ package data
 
 import "time"
 
+const (
+	Odbijen   int = 2
+	Presudjen int = 1
+	Otvoren   int = 0
+	Zatvoren  int = 1
+)
+
 /*Secret is struct that contains the secret key used for signing JWT tokens and ExpiresAt that represents until when JWT would be used and valid
  */
 type Secret struct {
@@ -10,11 +17,7 @@ type Secret struct {
 }
 
 type SudStatusDTO struct {
-	Status string `json:"status"`
-}
-
-type DokaziDTO struct {
-	Dokumenti []string `json:"dokumenti"`
+	Status int `json:"status"`
 }
 
 type FileDto struct {

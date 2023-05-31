@@ -13,5 +13,4 @@ type SaobracajnaRepo interface {
 	GetZaposleni(jmbg string) (*Zaposleni, error)
 	SaveSudskiNalog(nalog SudskiNalog) (*SudskiNalog, error)
 	UpdateSudNalogStatus(id, status string) error
-	UpdateSudNalogDokazi(nalogId string, dto DokaziDTO) error
 }

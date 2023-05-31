@@ -7,7 +7,6 @@ import (
 
 type SudService interface {
 	SendNalog(nalog data.SudskiNalog, PTT string) error
-	SendDokazi(idNaloga string, dto data.DokaziDTO) error
 	GetGradjaninSlucajevi(jmbg string) (slucajevi []*data.SudskiSlucaj, err error)
 }
 
@@ -20,11 +19,6 @@ func NewSudService(url string) SudService {
 }
 
 func (s sudServiceImpl) SendNalog(nalog data.SudskiNalog, PTT string) error {
-	//TODO implement me
-	return nil
-}
-
-func (s sudServiceImpl) SendDokazi(idNaloga string, dto data.DokaziDTO) error {
 	//TODO implement me
 	return nil
 }

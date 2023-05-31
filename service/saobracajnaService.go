@@ -21,7 +21,6 @@ type SaobracajnaService interface {
 	UpdateSudNalogStatus(id string, status data.SudStatusDTO) error
 	GetPolicajacNeIzvrseniNalozi(jmbg string) ([]data.PrekrsajniNalogDTO, error)
 	UpdatePrekrsajNalogIzvrsen(id, tokenSluzbenika string) error
-	SendDokazi(idNaloga string, dto data.DokaziDTO) error
 	GetAktivniSlucajvei(jmbg string) ([]*data.SudskiSlucaj, error)
 }
 
@@ -151,7 +150,11 @@ func (s saobracjanaServiceImpl) SaveSudskiNalog(nalog data.SudskiNalog) (*data.S
 }
 
 func (s saobracjanaServiceImpl) UpdateSudNalogStatus(id string, status data.SudStatusDTO) error {
-	err := s.saobracjanaRepo.UpdateSudNalogStatus(id, status.Status)
+	SlucajEnumMap := map[int]string{
+		data.Odbijen:   "ODBIJEN",
+		data.Presudjen: "PRESUDJEN",
+	}
+	err := s.saobracjanaRepo.UpdateSudNalogStatus(id, SlucajEnumMap[status.Status])
 	if err != nil {
 		log.Fatal(err.Error())
 		return errors.New("There is problem with saving nalog status to db")
@@ -177,25 +180,11 @@ func (s saobracjanaServiceImpl) UpdatePrekrsajNalogIzvrsen(id, tokenSluzbenika s
 	return nil
 }
 
-func (s saobracjanaServiceImpl) SendDokazi(idNaloga string, dto data.DokaziDTO) error {
-	err := s.sudService.SendDokazi(idNaloga, dto)
-	if err != nil {
-		log.Fatal(err)
-		return errors.New("There was problem while sending dokazi to SudService")
-	}
-	err = s.saobracjanaRepo.UpdateSudNalogDokazi(idNaloga, dto)
-	if err != nil {
-		log.Fatal(err)
-		return errors.New("There was problem while saving dokazi")
-	}
-	return nil
-}
-
 func (s saobracjanaServiceImpl) GetAktivniSlucajvei(jmbg string) ([]*data.SudskiSlucaj, error) {
 	slucajevi, err := s.sudService.GetGradjaninSlucajevi(jmbg)
 	if err != nil {
 		log.Fatal(err)
-		return nil, errors.New("There was problem while saving dokazi")
+		return nil, errors.New("There was problem while getting aktivni slucajevi")
 	}
 	return slucajevi, nil
 }

@@ -61,7 +61,7 @@ use eupravaMilicija;
         JMBGSluzbenika varchar(13) not null,
         Optuzeni varchar(40) not null,
         JMBGOptuzenog varchar(13) not null,
-        StatusSlucaja enum ('POSLAT','U_PROCESU','ODBIJEN','PRESUDJEN','POTREBNI_DOKAZI') not null,
+        StatusSlucaja enum ('POSLAT','U_PROCESU','ODBIJEN','PRESUDJEN') not null,
         primary key (Id)
     );
     
