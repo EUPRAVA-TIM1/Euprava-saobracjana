@@ -136,16 +136,18 @@ func (s saobracjanaServiceImpl) SaveSudskiNalog(nalog data.SudskiNalog) (*data.S
 	}
 	nalog.Datum = time.Now()
 	nalog.OpstinaPTT = zaposleni.RadiU.Opstina.PTT
-	err = s.sudService.SendNalog(nalog)
-	if err != nil {
-		log.Fatal(err.Error())
-		return nil, errors.New("There is problem with sending nalog to sudService")
-	}
+
 	nalog.StatusSlucaja = "U_PROCESU"
 	savedNalog, err := s.saobracjanaRepo.SaveSudskiNalog(nalog)
 	if err != nil {
 		log.Fatal(err.Error())
 		return nil, errors.New("There is problem with saving nalog to db")
+	}
+	nalog.Id = savedNalog.Id
+	err = s.sudService.SendNalog(nalog)
+	if err != nil {
+		log.Fatal(err.Error())
+		return nil, errors.New("There is problem with sending nalog to sudService")
 	}
 	return savedNalog, nil
 }

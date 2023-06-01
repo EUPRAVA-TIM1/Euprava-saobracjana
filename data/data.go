@@ -165,16 +165,12 @@ type Datum struct {
 }
 
 func (s *Datum) UnmarshalJSON(data []byte) error {
-	// Define custom time format
 	const customTimeLayout = `"2006-01-02T15:04:05.9999999"`
 
-	// Parse the time using the custom layout
 	parsedTime, err := time.Parse(customTimeLayout, string(data))
 	if err != nil {
 		return err
 	}
-
-	// Assign the parsed time to the struct field
 	s.MojDatum = parsedTime
 
 	return nil
