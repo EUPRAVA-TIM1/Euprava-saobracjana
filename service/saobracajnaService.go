@@ -61,7 +61,7 @@ func (s saobracjanaServiceImpl) SaveNalog(noviNalog data.PrekrsajniNalog) (*data
 	if noviNalog.KaznaIzvrsena {
 		points := CalculatePointsForTicket(noviNalog)
 		if points != 0 {
-			err := s.mupService.SendPoints(points)
+			err := s.mupService.SendPoints(noviNalog.JMBGZapisanog, points)
 			if err != nil {
 				log.Fatal(err)
 				return nil, errors.New("There was problem while sending nalog points to MUP")
