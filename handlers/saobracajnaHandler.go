@@ -35,7 +35,6 @@ func (s saobracjanaHandler) Init(r *mux.Router) {
 	r.HandleFunc("/saobracajna/Policajac/Nalozi/NotIzvrseni/{jmbg}", s.IsAuthorized(s.GetPolicajacNeIzvrseniNalozi, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/{jmbg}", s.IsAuthorized(s.GetPolicajacSudskiNalozi, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/Status/{id}", s.IsAuthorized(s.SetSudNalogStatus, false)).Methods("PUT", "OPTIONS")
-	r.HandleFunc("/saobracajna/Policajac/Sud/Nalozi/Dokazi/{id}", s.IsAuthorized(s.SendSudNalogDokazi, true)).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Nalozi/Izvrsi/{id}", s.IsAuthorized(s.SetPrekrsajNalogIzvrsen, true)).Methods("PUT", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/Sud/{jmbg}", s.IsAuthorized(s.ProveraOsobeSud, true)).Methods("GET", "OPTIONS")
 	r.HandleFunc("/saobracajna/Policajac/Provera/VozackaDozvola/Mup/{brojVozacke}", s.IsAuthorized(s.ProveraOsobeMup, true)).Methods("GET", "OPTIONS")
@@ -180,23 +179,6 @@ func (s saobracjanaHandler) SetSudNalogStatus(w http.ResponseWriter, r *http.Req
 		return
 	}
 	err = s.saobracjanaService.UpdateSudNalogStatus(id, status)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	jsonResponse("", w, http.StatusOK)
-}
-
-func (s saobracjanaHandler) SendSudNalogDokazi(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	var dokazi data.DokaziDTO
-	err := json.NewDecoder(r.Body).Decode(&dokazi)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = s.saobracjanaService.SendDokazi(id, dokazi)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

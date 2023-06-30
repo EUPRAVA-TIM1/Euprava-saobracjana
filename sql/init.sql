@@ -61,7 +61,7 @@ use eupravaMilicija;
         JMBGSluzbenika varchar(13) not null,
         Optuzeni varchar(40) not null,
         JMBGOptuzenog varchar(13) not null,
-        StatusSlucaja enum ('POSLAT','U_PROCESU','ODBIJEN','PRESUDJEN','POTREBNI_DOKAZI') not null,
+        StatusSlucaja enum ('POSLAT','U_PROCESU','ODBIJEN','PRESUDJEN') not null,
         primary key (Id)
     );
     
@@ -83,7 +83,7 @@ INSERT INTO Secrets (Id,ExpiresAt, SecretKey) VALUES (1,Now(),'secret');
 
 -- Unos podataka o opštinama
 INSERT INTO Opstina (PTT, Naziv) VALUES
-(11000, 'Beograd'),
+(12000, 'Beograd'),
 (21000, 'Novi Sad'),
 (24000, 'Subotica'),
 (18000, 'Niš'),
@@ -93,15 +93,15 @@ INSERT INTO Opstina (PTT, Naziv) VALUES
 
 -- Unos podataka o stanicama
 INSERT INTO PolicijskaStanica (Id,Adresa,BrojTelefona,Email,VremeOtvaranja,VremeZatvaranja,OpstinaID) VALUES
-(1, 'Knez Mihailova 10', '011/111-111', 'ps1@policija.rs', '08:00', '20:00', 11000),
+(1, 'Knez Mihailova 10', '011/111-111', 'ps1@policija.rs', '08:00', '20:00', 12000),
 (2, 'Bulevar Despota Stefana 15', '011/222-222', 'ps2@policija.rs', '07:00', '19:00', 21000),
-(3, 'Kralja Petra 20', '011/333-333', 'ps3@policija.rs', '09:00', '21:00', 11000),
+(3, 'Kralja Petra 20', '011/333-333', 'ps3@policija.rs', '09:00', '21:00', 12000),
 (4, 'Nemanjina 25', '011/444-444', 'ps4@policija.rs', '08:30', '19:30', 21000),
 (5, 'Bulevar Kralja Aleksandra 30', '011/555-555', 'ps5@policija.rs', '10:00', '22:00', 21000),
 (6, 'Vojvode Stepe 35', '011/666-666', 'ps6@policija.rs', '09:30', '20:30', 18000),
 (7, 'Bulevar Mihajla Pupina 40', '011/777-777', 'ps7@policija.rs', '07:30', '18:30', 24000),
 (8, 'Vuka Karadzica 45', '011/888-888', 'ps8@policija.rs', '08:00', '20:00', 36000),
-(9, 'Takovska 50', '011/999-999', 'ps9@policija.rs', '10:30', '22:30', 11000),
+(9, 'Takovska 50', '011/999-999', 'ps9@policija.rs', '10:30', '22:30', 12000),
 (10, 'Resavska 55', '011/000-000', 'ps10@policija.rs', '07:00', '19:00', 34000);
 
 -- Unos zaposlenih 

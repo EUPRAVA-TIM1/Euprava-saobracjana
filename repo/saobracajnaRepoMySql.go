@@ -153,7 +153,7 @@ func (s SaobracjanaRepoSql) GetPolicajacSudskeNaloge(JMBG string) ([]data.Sudski
 			panic(err.Error())
 		}
 		nalog.Datum = datum
-		var files = make([]string, 0)
+		var files = make([]data.Docment, 0)
 		fileQuery := "select UrlDokumenta from DokumentiSudskogNaloga where NalogId = ?;"
 		fileRows, err := db.Query(fileQuery, nalog.Id)
 		if err != nil {
@@ -161,12 +161,12 @@ func (s SaobracjanaRepoSql) GetPolicajacSudskeNaloge(JMBG string) ([]data.Sudski
 			return nil, errors.New("There has been problem with reading imgs from db")
 		}
 		for fileRows.Next() {
-			var url string
-			err := fileRows.Scan(&url)
+			var doc data.Docment
+			err := fileRows.Scan(&doc.UrlDokumenta)
 			if err != nil {
 				log.Fatal(err)
 			}
-			files = append(files, url)
+			files = append(files, doc)
 		}
 		nalog.Dokumenti = files
 		nalozi = append(nalozi, nalog)
@@ -388,7 +388,7 @@ func (s SaobracjanaRepoSql) SaveSudskiNalog(nalog data.SudskiNalog) (*data.Sudsk
 	if len(nalog.Dokumenti) > 0 {
 		for i := 0; i < len(nalog.Dokumenti); i++ {
 			query := "INSERT INTO DokumentiSudskogNaloga(NalogId,UrlDokumenta) VALUES (?,?)"
-			_, err := db.Exec(query, id, nalog.Dokumenti[i])
+			_, err := db.Exec(query, id, nalog.Dokumenti[i].UrlDokumenta)
 			if err != nil {
 				log.Fatal(err)
 				query := "DELETE FROM SudskiNalog where Id = ?"
@@ -400,6 +400,22 @@ func (s SaobracjanaRepoSql) SaveSudskiNalog(nalog data.SudskiNalog) (*data.Sudsk
 
 	nalog.Id = id
 	return &nalog, nil
+}
+
+func (s SaobracjanaRepoSql) RemoveSudskiNalog(id int64) error {
+	db, err := s.OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+		return errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+
+	query := "DELETE FROM SudskiNalog where Id = ?"
+	_, err = db.Exec(query, id)
+	if err != nil {
+		return fmt.Errorf("failed to insert secret key: %v", err)
+	}
+	return nil
 }
 
 func (s SaobracjanaRepoSql) UpdateSudNalogStatus(id, status string) error {
@@ -432,24 +448,6 @@ func (s SaobracjanaRepoSql) UpdatePrekrsajNalogIzvrsen(id string) error {
 	if err != nil {
 		log.Fatal(err)
 		return fmt.Errorf("failed to insert secret key: %v", err)
-	}
-	return nil
-}
-
-func (s SaobracjanaRepoSql) UpdateSudNalogDokazi(nalogId string, dto data.DokaziDTO) error {
-	db, err := s.OpenConnection()
-	if err != nil {
-		log.Fatal(err)
-		return errors.New("There has been problem with connectiong to db")
-	}
-	defer db.Close()
-	for i := 0; i < len(dto.Dokumenti); i++ {
-		query := "INSERT INTO DokumentiSudskogNaloga(NalogId,UrlDokumenta) VALUES (?,?)"
-		_, err := db.Exec(query, nalogId, dto.Dokumenti[i])
-		if err != nil {
-			log.Fatal(err)
-			return fmt.Errorf("failed to insert secret key: %v", err)
-		}
 	}
 	return nil
 }

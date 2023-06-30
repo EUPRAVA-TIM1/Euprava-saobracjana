@@ -38,7 +38,7 @@ const (
 	SsoServiceHostKey    = "SSO_SERVICE_HOST"
 	MupServiceHostKey    = "MUP_HOST"
 	MupServicePortKey    = "MUP_PORT"
-	SudServicePortKey    = "SUD_SERVICE_PORT"
+	SudServicePortKey    = "SUD_PORT"
 	SudServiceHostKey    = "SUD_SERVICE_HOST"
 	FileServicePortKey   = "FILE_SERVICE_PORT"
 	FileServiceHostKey   = "FILE_SERVICE_HOST"
