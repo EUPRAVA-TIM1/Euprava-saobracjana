@@ -11,28 +11,8 @@ in [this repo](https://github.com/EUPRAVA-TIM1/DockerCompose). Ports can be seen
 ## Endpoints(for other services)
 
 - `GET /saobracajna/Gradjanin/Nalozi/{jmbg}` Gets all user prekrsajniNalozi.\
-**Expects** `Authorization` header with JWT token(with or without Barrer) \
-**Returns** Json arrat of nalozi in this format:
-```
-{
-    "id": int,
-    "datum": date,
-    "opis": string,
-    "izdatoOdStrane": string,
-    "izdatoZa": string,
-    "JMBGZapisanog": string,
-    "tipPrekrsaja" : string,
-    "jedinicaMere" : string | null,
-    "vrednost": string | null,
-    slike: []string,
-    kaznaIzvrsena bool
-}
-```
-<<<<<<< HEAD
-- `GET /saobracajna/Gradjanin/Nalozi/{jmbg}` Gets all user prekrsajniNalozi.\
 **Expects** `Authorization` header with JWT token(with or without Barrer) and JMBG of a gradjanin as a url param \
 **Returns** Json arrat of nalozi in this format:
-```
 {
 "id": int,
 "datum": date,
@@ -46,13 +26,9 @@ in [this repo](https://github.com/EUPRAVA-TIM1/DockerCompose). Ports can be seen
 slike: []string,
 kaznaIzvrsena bool
 }
-```
-- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Upadtes status of user Sud Nalog.\
-=======
-- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}` Gets all user prekrsajniNalozi.\
->>>>>>> 1a278f2df96b4b2d080a1d087335644631d40b04
-  **Expects** `Authorization` header with JWT token(with or without Barrer) id of nalog as url param and json with status in this format:
-```
+- `PUT /saobracajna/Policajac/Sud/Nalozi/Status/{id}`Upadtes status of user Sud Nalog.\
+  **Expects** `Authorization` header with JWT token(with or without Barrer) id of nalog as url param and JSON with status in this format:
+ ```
 {
 "status": string
 }
