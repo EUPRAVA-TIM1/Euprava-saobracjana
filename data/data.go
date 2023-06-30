@@ -127,11 +127,10 @@ type SudskiNalogDTO struct {
 }
 
 type PrijavaKradjeVozila struct {
-	Prijvio          string    `json:"prijvio", max=60`
-	KontaktTelefon   string    `json:"kontaktTelefon",min=10,max=13`
-	BrojRegistracije string    `json:"brojRegistracije"max=7,min=3`
-	Datum            time.Time `json:"datum"`
-	JMBGVlasnika     string    `json:"JMBGVlasnika", len=13`
+	Prijvio          string `json:"prijavio", max=60`
+	KontaktTelefon   string `json:"kontaktTelefon",min=10,max=13`
+	BrojRegistracije string `json:"regBroj"max=7,min=3`
+	JMBGVlasnika     string `json:"korisnik", len=13`
 }
 
 type VozackaDozvola struct {

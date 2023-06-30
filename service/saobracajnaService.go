@@ -147,6 +147,7 @@ func (s saobracjanaServiceImpl) SaveSudskiNalog(nalog data.SudskiNalog) (*data.S
 	err = s.sudService.SendNalog(nalog)
 	if err != nil {
 		log.Fatal(err.Error())
+		s.saobracjanaRepo.RemoveSudskiNalog(savedNalog.Id)
 		return nil, errors.New("There is problem with sending nalog to sudService")
 	}
 	return savedNalog, nil

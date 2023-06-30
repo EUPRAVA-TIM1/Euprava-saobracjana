@@ -402,6 +402,22 @@ func (s SaobracjanaRepoSql) SaveSudskiNalog(nalog data.SudskiNalog) (*data.Sudsk
 	return &nalog, nil
 }
 
+func (s SaobracjanaRepoSql) RemoveSudskiNalog(id int64) error {
+	db, err := s.OpenConnection()
+	if err != nil {
+		log.Fatal(err)
+		return errors.New("There has been problem with connectiong to db")
+	}
+	defer db.Close()
+
+	query := "DELETE FROM SudskiNalog where Id = ?"
+	_, err = db.Exec(query, id)
+	if err != nil {
+		return fmt.Errorf("failed to insert secret key: %v", err)
+	}
+	return nil
+}
+
 func (s SaobracjanaRepoSql) UpdateSudNalogStatus(id, status string) error {
 	db, err := s.OpenConnection()
 	if err != nil {

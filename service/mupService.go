@@ -57,9 +57,31 @@ func (m mupServiceImpl) SendPoints(jmbg string, points int) (err error) {
 	return
 }
 
-func (m mupServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozila) error {
-	//TODO implement me
-	return nil
+func (m mupServiceImpl) SendKradjaPrijava(prijava data.PrijavaKradjeVozila) (err error) {
+	u, err := url.Parse(m.serviceUrl + "/api/vehicles/report")
+	if err != nil {
+		return
+	}
+	json, err := json.Marshal(prijava)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	client := http.Client{}
+	req, err := http.NewRequest("POST", u.String(), bytes.NewReader(json))
+	req.Header.Set("Content-Type", "application/json")
+	response, err := client.Do(req)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	if response.StatusCode == http.StatusOK {
+		return
+	}
+	err = errors.New("can not reach Sud service")
+	return
 }
 
 func (m mupServiceImpl) GetVozacka(jmbg string) (vozacka *data.VozackaDozvola, err error) {
